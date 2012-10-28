@@ -711,10 +711,6 @@ void CSaccadeSearchDlg::OutputSaccades()
   this->SacXEndT.SetWindowTextA(tmp);
   tmp.Format("%1.4f",s->EndY);
   this->SacYEndT.SetWindowTextA(tmp);
-
-  this->SacYEndT.SetWindowTextA(s->Notice);
-
-
   tmp.Format("%1.4f",s->AmplitudeY());
   this->SacAmplitudeT.SetWindowTextA(tmp);
   tmp.Format("%x",s->StimulCode);
@@ -1790,7 +1786,7 @@ void CSaccadeSearchDlg::OnEnChangeEdit20()
     return;
   CString tmp;
   this->SacXEndT.GetWindowTextA(tmp);
-  float x=atof(tmp);
+  float x=(float)atof(tmp);
   Saccade * sac=Conan->Saccades.at(Win->CurSaccade);
   float y=Win->GetYFromX(sac->chan,sac->rec,x);
   tmp.Format("%1.0f",y);
