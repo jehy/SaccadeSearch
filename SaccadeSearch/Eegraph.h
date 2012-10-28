@@ -19,6 +19,8 @@ public:
   float ScreenGraphWidth();
   float RealGraphHeight();
   float ScreenGraphHeight();
+  float GetYFromX(int chan, int rec,float x);
+  int XRealToPoint(float x);
 
 	void WinPaint();
   void _CreateDC();
@@ -58,6 +60,7 @@ public:
   CPoint MovePoint;
   float RulerPointX;
   float RulerPointY;
+ int CurSaccade;
 
 protected:
 	DECLARE_MESSAGE_MAP()

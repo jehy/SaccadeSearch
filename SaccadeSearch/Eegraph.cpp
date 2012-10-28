@@ -70,6 +70,7 @@ Eegraph::Eegraph()
   RulerPointY=0;
   MovePoint.x=0;
   MovePoint.y=0;
+  CurSaccade=0;
 }
 
 Eegraph::~Eegraph()
@@ -121,6 +122,14 @@ void Eegraph::_CreateDC()
 	OldFont=DC.SelectObject(&Font);
 
 
+}
+
+float Eegraph::GetYFromX(int chan, int rec,float x)
+{
+    int y=XRealToPoint(x);
+    if(y!=0)
+      return Conan->Eeg[rec][chan][y];
+    return 0;
 }
 
 void Eegraph::OnLButtonDown(UINT nFlags, CPoint point)
@@ -206,23 +215,56 @@ void Eegraph::DrawSaccades()
 {
   if(0)
     return;
+  
+  COLORREF ActiveSaccadeColor=RGB(183,9,67);
+  CPen ActivePen;
+  ActivePen.DeleteObject();
+	ActivePen.CreatePen(0,2,ActiveSaccadeColor);			//Создать перо
+
+  
+  CPen BorderPen;
+  BorderPen.DeleteObject();
+	BorderPen.CreatePen(0,1,ActiveSaccadeColor);			//Создать перо
+
+
   COLORREF SaccadeColor=RGB(10,10,190);
   Pen.DeleteObject();
 	Pen.CreatePen(0,2,SaccadeColor);			//Создать перо
 	OldPen=DC.SelectObject(&Pen);
 
+  
   for(unsigned int i=0;i<Conan->Saccades.size();i++)
   {
     if(Conan->Saccades.at(i)->rec!=Conan->CurRec || Conan->Saccades.at(i)->chan!=Conan->CurChannel)
       continue;
+    if(i==this->CurSaccade)
+	    OldPen=DC.SelectObject(&ActivePen);
     DC.MoveTo(XToScreenCoords(Conan->Saccades.at(i)->BeginX),YToScreenCoords(Conan->Saccades.at(i)->BeginY));
     DC.LineTo(XToScreenCoords(Conan->Saccades.at(i)->EndX),YToScreenCoords(Conan->Saccades.at(i)->EndY));
+    if(i==this->CurSaccade)
+    {
+      //draw border
+	    OldPen=DC.SelectObject(&BorderPen);//select border pen
+      DC.LineTo(XToScreenCoords(Conan->Saccades.at(i)->BeginX),YToScreenCoords(Conan->Saccades.at(i)->EndY));
+      DC.LineTo(XToScreenCoords(Conan->Saccades.at(i)->BeginX),YToScreenCoords(Conan->Saccades.at(i)->BeginY));
+      DC.LineTo(XToScreenCoords(Conan->Saccades.at(i)->EndX),YToScreenCoords(Conan->Saccades.at(i)->BeginY));
+      DC.LineTo(XToScreenCoords(Conan->Saccades.at(i)->EndX),YToScreenCoords(Conan->Saccades.at(i)->EndY));
+
+	    OldPen=DC.SelectObject(&Pen);//select usual pen
+    }
   }
 }
 
 float Eegraph::XToScreenCoords(float XRealCoords)
 {
   return (XRealCoords+Conan->XOffset)*Conan->ZoomX;
+}
+int Eegraph::XRealToPoint(float x)
+{
+    int y=floor(x/1000.0*(float)Conan->Header->freq);
+    if(y>=Conan->NDataReal[Conan->CurRec])
+      return 0;
+    return y;
 }
 
 float Eegraph::XToRealCoordsFromPoint(float point)
@@ -443,7 +485,7 @@ void Eegraph::DrawDC()
           DC.SelectObject(&PointPen);
           DC.Rectangle(xz-1,yz-1,xz+1,yz+1);
           DC.SelectObject(&Pen);
-          p.Format("%4.3f; %4.3f;",x,y);
+          p.Format("%4.0f; %4.3f;",x,y);
           DC.TextOutA(floor(xz),floor(yz),p.GetBuffer(),p.GetLength());
           DC.SelectObject(&LinePen);
         }

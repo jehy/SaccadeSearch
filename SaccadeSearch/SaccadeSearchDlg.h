@@ -92,7 +92,6 @@ public:
  CEdit MinTimeOffsetT;
  CEdit NegativeStimulCodesT;
  CButton ClearOther;
- int CurSaccade;
  CEdit CurSaccadeT;
  afx_msg void OnBnClickedButton11();
  afx_msg void OnBnClickedButton8();
@@ -142,4 +141,12 @@ public:
   int GetStimulSign(__int8 stimul);
   afx_msg void OnEnChangeEdit15();
   void ScanHexToText(CEdit* from,StimulVec* to);
+  CButton SearchForCal;
+  afx_msg void OnEnChangeEdit8();
+  afx_msg void OnEnChangeEdit18();
+  afx_msg void OnEnChangeEdit20();
+  afx_msg void OnBnClickedButton10();
+  afx_msg void OnBnClickedButton15();
+  afx_msg void OnBnClickedButton17();
+  afx_msg void OnBnClickedButton16();
 };
