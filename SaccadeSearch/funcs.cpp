@@ -15,7 +15,7 @@ void AddLog(CEdit*log,CString z)
 ConanData* ReadConanFile(char* fname,CEdit* log)
 {
  
-  CString z,logstr;
+  //CString z,logstr;
 
   FILE * pFile;
   long lSize;
@@ -35,8 +35,8 @@ ConanData* ReadConanFile(char* fname,CEdit* log)
   buffer = new byte[lSize];
   result = fread (buffer,1,lSize,pFile);
   fclose(pFile);
-  z.Format("File size: %d",lSize);
-  AddLog(log,z);
+  //z.Format("File size: %d",lSize);
+  //AddLog(log,z);
   
   //can't copy memory directly into structure because it may not be compacted with some compilers's settings.
   ConanHeader* data=new ConanHeader();
@@ -76,7 +76,7 @@ ConanData* ReadConanFile(char* fname,CEdit* log)
 
   pos=data->Arec;
   
-  z.Format("Arec: %d \r\n",data->Arec);
+  /*z.Format("Arec: %d \r\n",data->Arec);
   logstr.Append(z);
   z.Format("nChan: %d\r\n",data->nChan);
   logstr.Append(z);
@@ -97,7 +97,7 @@ ConanData* ReadConanFile(char* fname,CEdit* log)
   logstr.Append(z);
   z.Format("sens last(31): %d\r\n",data->sens[31]);
   logstr.Append(z);
-  AddLog(log,logstr);
+  AddLog(log,logstr);*/
 
 
   float *** Eeg=new float** [data->nRec];
@@ -114,8 +114,8 @@ ConanData* ReadConanFile(char* fname,CEdit* log)
     memcpy_s(&NDataReal[i],sizeof(__int16),&buffer[pos],sizeof(__int16));
     pos+=sizeof(__int16);
 
-    logstr.Format("recNDataRaw: %d\r\nrecNDataReal: %d",NDataRaw[i],NDataReal[i]);
-    AddLog(log,logstr);
+    //logstr.Format("recNDataRaw: %d\r\nrecNDataReal: %d",NDataRaw[i],NDataReal[i]);
+    //AddLog(log,logstr);
     
     Eeg[i]=new float*[data->nChan];
 	  for (int j=0;j<data->nChan;j++)
@@ -123,7 +123,8 @@ ConanData* ReadConanFile(char* fname,CEdit* log)
       Eeg[i][j]=new float[NDataReal[i]];
       for(int k=0;k<NDataReal[i];k++)
       {
-        Eeg[i][j][k]=*(__int16*)&buffer[pos]-data->nilCalibr[j]/(float)data->maxCalibr[j]*data->sens[j];
+        __int16 xxx=*(__int16*)&buffer[pos];
+        Eeg[i][j][k]=(*(__int16*)&buffer[pos]-(float)data->nilCalibr[j])/(float)data->maxCalibr[j]*(float)data->sens[j];
         pos+=sizeof(__int16);
       }
 	  }
@@ -135,8 +136,9 @@ ConanData* ReadConanFile(char* fname,CEdit* log)
       for(int k=0;k<NDataReal[i];k++)
       {
         memcpy_s(&Discr[i][k].Elder,sizeof(__int8),&buffer[pos],sizeof(__int8));
+        pos+=1;
         memcpy_s(&Discr[i][k].Littler,sizeof(__int8),&buffer[pos],sizeof(__int8));
-        pos+=sizeof(__int16);
+        pos+=1;
       }
 	  }
 	  else
@@ -171,12 +173,12 @@ ConanData* ReadConanFile(char* fname,CEdit* log)
     memcpy_s(&NDataReal2[i],sizeof(__int16),&buffer[pos],sizeof(__int16));
     pos+=sizeof(NDataReal2[i]);
     
-    z.Format("recNDataReal2: %d ",NDataReal2[i]);
-    AddLog(log,z);
+    //z.Format("recNDataReal2: %d ",NDataReal2[i]);
+    //AddLog(log,z);
 
     
-    z.Format("Bytes processed: %d \r\n",pos);
-    AddLog(log,z);
+    //z.Format("Bytes processed: %d \r\n",pos);
+    //AddLog(log,z);
 
   }
   delete[] buffer;

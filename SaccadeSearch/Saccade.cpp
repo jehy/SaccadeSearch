@@ -8,7 +8,8 @@ Saccade::Saccade(void)
   EndX=0;
   EndY=0;
   //Sign=0;
-  LatentTime=0;
+  TimeFromCal=0;
+  TimeFromStimul=0;
   StimulCode=0;
   Points=0;
   chan=0;

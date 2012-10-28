@@ -10,8 +10,9 @@ public:
   float EndX;
   float EndY;
   //bool Sign;
-  float LatentTime;
-  float StimulCode;
+  float TimeFromStimul;
+  float TimeFromCal;
+  unsigned __int8 StimulCode;
   int Points;
   int chan;
   int rec;

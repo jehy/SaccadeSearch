@@ -23,8 +23,8 @@ struct ConanHeader
 
 struct StimulSignal
 {
-  __int8 Littler;
-  __int8 Elder;
+  unsigned __int8 Littler;
+  unsigned __int8 Elder;
 };
 
 class ConanData
@@ -36,6 +36,7 @@ public:
 	ConanHeader* Header;
 
   float *** Eeg;//                 EEG data itself
+  float *** EegApproximated;//     Approximated EEG data
   __int32 * TimeCreating;//        we dunno, wtf is this too
   unsigned __int16* NDataReal2;
   unsigned __int16* NDataReal;
@@ -48,6 +49,10 @@ public:
   float ZoomY;
   float XOffset;
   float YOffset;
+  int Approximate;
+  int AproxCoef;
+  int Iterations;
+  int MinExtremumPoints;
   SaccadeVec Saccades;
   void ResetSaccades();
 };

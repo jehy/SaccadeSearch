@@ -31,6 +31,8 @@ public:
   void hold();
   void unhold();
   void DrawRuler();
+  void DrawStimuls();
+  void DrawApproximation();
   afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
   void AppendFormatFloat(CString* string,float f,int maxchars);
 

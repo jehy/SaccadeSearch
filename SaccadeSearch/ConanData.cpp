@@ -10,14 +10,17 @@ ConanData::ConanData(void)
   this->NDataReal=NULL;
   this->NDataRaw=NULL;
   this->Discr=NULL;
-//  this->TimeDataI=NULL;
-//  this->TimeCreatingI=NULL;
+  EegApproximated=NULL;
   this->CurChannel=0;
   this->CurRec=0;
   this->ZoomX=100;
-  this->ZoomY=0.1;
+  this->ZoomY=(float)0.1;
   this->XOffset=0;
   this->YOffset=0;
+  Approximate=0;
+  AproxCoef=0;
+  Iterations=0;
+  MinExtremumPoints=0;
 }
 
 ConanData::~ConanData(void)
@@ -30,8 +33,17 @@ ConanData::~ConanData(void)
       delete[] Eeg[i][j];
     delete[] Eeg[i];
     delete[] Discr[i];
-//    delete[] TimeCreatingI[i];
   }
+  if(EegApproximated!=NULL)
+  {
+    for (int i=0;i<this->Header->nRec;i++)
+    {
+	    for (int j=0;j<this->Header->nChan;j++)
+        delete[] EegApproximated[i][j];
+      delete[] EegApproximated[i];
+    }
+  }
+  delete[] EegApproximated;
   delete[] this->Header;
   delete[] this->Eeg;
   delete[] this->TimeCreating;

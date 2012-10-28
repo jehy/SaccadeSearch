@@ -1,9 +1,10 @@
 #include "StdAfx.h"
 #include "Eegraph.h"
 #include "Conandata.h"
-#include <math.h>;
+#include <math.h>
 extern ConanData* Conan;
 IMPLEMENT_DYNAMIC(Eegraph, CWnd)
+
 
 BOOL Eegraph::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 {
@@ -80,13 +81,13 @@ Eegraph::~Eegraph()
 
 void Eegraph::hold()
 {
-  held=1;
+  held++;
 }
 
 void Eegraph::unhold()
 {
-  held=0;
-  if(this->changed)
+  held--;
+  if(this->changed && held==0)
     this->WinPaint();
 }
 
@@ -137,25 +138,23 @@ void Eegraph::OnLButtonDown(UINT nFlags, CPoint point)
 
     int rec=Conan->CurRec;
     int chan=Conan->CurChannel;
-    float x=0;
+    float x,x2;
     for(int n=0;n<Conan->NDataReal[rec];n++)
     {
       
-      if(n+1>=Conan->NDataReal[rec])//it was last point
+      if(n==Conan->NDataReal[rec])//it was last point
       {
         this->RulerPointX=x;
         this->RulerPointY=Conan->Eeg[rec][chan][n];
         break;
       }
-
-      float x2=x+(float)Conan->Header->freq/1000;//next point value
+      x=XToRealCoordsFromPoint(n);
+      x2=XToRealCoordsFromPoint(n+1);//next point value
 
       if(x2>=xp)
       {
         //not last, check the nearest
-        float a1=abs(xp-x);
-        float a2=abs(xp-x2);
-        if(a1>a2)
+        if(abs(xp-x)>abs(xp-x2))
         {
           this->RulerPointX=x2;
           this->RulerPointY=Conan->Eeg[rec][chan][n+1];
@@ -168,15 +167,11 @@ void Eegraph::OnLButtonDown(UINT nFlags, CPoint point)
 
         break;
       }
-      x+=(float)Conan->Header->freq/1000;
     }
     this->changed=1;
     this->WinPaint();
     
     this->GetParent()->PostMessageA(WM_RBUTTONDOWN,668,NULL);
-    //float y=(Win->ClientRect.bottom-point.y)/Conan->ZoomY-Conan->YOffset;
-    //float xm
-    //while()
   }
 }
 
@@ -216,7 +211,7 @@ void Eegraph::DrawSaccades()
 	Pen.CreatePen(0,2,SaccadeColor);			//Создать перо
 	OldPen=DC.SelectObject(&Pen);
 
-  for(int i=0;i<Conan->Saccades.size();i++)
+  for(unsigned int i=0;i<Conan->Saccades.size();i++)
   {
     if(Conan->Saccades.at(i)->rec!=Conan->CurRec || Conan->Saccades.at(i)->chan!=Conan->CurChannel)
       continue;
@@ -232,7 +227,7 @@ float Eegraph::XToScreenCoords(float XRealCoords)
 
 float Eegraph::XToRealCoordsFromPoint(float point)
 {
-  return point*(float)Conan->Header->freq/1000;
+  return point*1000/(float)Conan->Header->freq;
 }
 float Eegraph::YToScreenCoords(float YRealCoords)
 {//turn coords upside-down
@@ -266,6 +261,43 @@ float Eegraph::ScreenGraphHeight()
 }
 
 
+void Eegraph::DrawStimuls()
+{
+  float x,xz;
+  unsigned __int8 stimul;
+  int LastLetterX=0,yz=0;
+  if(Conan->Header->discrExist!=1)//no discr channel
+    return;
+  CString out;
+  COLORREF ColorText=RGB(200,40,20);
+  DC.SetTextColor(ColorText);
+  int rec=Conan->CurRec;
+  {
+    for(int n=0;n<Conan->NDataReal[rec];n++)
+    {
+      stimul=Conan->Discr[rec][n].Elder;
+      if(stimul==2 || stimul==0)//wtf?
+        continue;
+      x=XToRealCoordsFromPoint(n);
+      xz=XToScreenCoords(x);
+      out.Format("%X",stimul);
+      if(xz>=0 && xz<ScreenGraphWidth())
+      {
+        if(xz-12>=LastLetterX)
+        {
+          yz=12;
+        }
+        else
+        {
+          yz+=12;
+        }
+        LastLetterX=xz;
+        DC.TextOutA(xz,yz,out.GetBuffer(),out.GetLength());
+      }
+      
+    }
+  }
+}
 void Eegraph::DrawCoord()
 {
   //int grid=1;
@@ -329,6 +361,45 @@ void Eegraph::DrawRuler()
   DC.LineTo(floor(xz),ScreenGraphHeight());
 }
 
+
+void Eegraph::DrawApproximation()
+{
+  if(Conan->EegApproximated==NULL || Conan->Approximate==0)
+    return;
+
+  float xz,yz;
+  COLORREF LinePen=RGB(200,100,50);
+
+  Pen.DeleteObject();
+	Pen.CreatePen(0,2,LinePen);			//Создать перо
+	OldPen=DC.SelectObject(&Pen);
+
+  int chan=Conan->CurChannel;
+  {
+    bool nextbreak=false;
+    //for(int rec=0;rec<Conan->Header->nRec;rec++)
+    int rec=Conan->CurRec;
+    {
+      for(int n=0;n<Conan->NDataReal[rec];n++)
+      {
+        y=Conan->EegApproximated[rec][chan][n];
+        yz=YToScreenCoords(y);
+        x=XToRealCoordsFromPoint(n);
+        xz=XToScreenCoords(x);
+        if(n==0)
+          DC.MoveTo(floor(xz),floor(yz));
+        else
+          DC.LineTo(floor(xz),floor(yz));
+        
+        if(nextbreak)
+          break;
+        if(floor(xz)>=ClientRect.right)
+          nextbreak=true;
+      }
+    }
+  }
+}
+
 void Eegraph::DrawDC()
 {
   this->ClearDC();
@@ -356,42 +427,25 @@ void Eegraph::DrawDC()
     //for(int rec=0;rec<Conan->Header->nRec;rec++)
     int rec=Conan->CurRec;
     {
-      //move to first point
-
-      y=Conan->Eeg[rec][chan][0];
-      x=0;
-
-      yz=YToScreenCoords(y);
-      xz=XToScreenCoords(x);
-
-      DC.MoveTo(floor(xz),floor(yz));
-      /*if(points)
-      {
-        DC.SetDCPenColor(PointPen);
-        DC.Rectangle(xz-1,yz-1,xz+1,yz+1);
-        //DC.SetDCPenColor(LinePen);
-        p.Format("%4.3f; %4.3f;",x,y);
-        DC.TextOutA(floor(xz),floor(yz),p.GetBuffer(),p.GetLength());
-      }*/
-
-      for(int n=0;n<Conan->NDataReal[rec];n++)//begin from second point
+      for(int n=0;n<Conan->NDataReal[rec];n++)
       {
         y=Conan->Eeg[rec][chan][n];
         yz=YToScreenCoords(y);
         x=XToRealCoordsFromPoint(n);
         xz=XToScreenCoords(x);
-        if(n>0)
+        if(n==0)
+          DC.MoveTo(floor(xz),floor(yz));
+        else
           DC.LineTo(floor(xz),floor(yz));
         
         if(points)
         {
-          //DC.SetDCPenColor(PointPen);
           DC.SelectObject(&PointPen);
           DC.Rectangle(xz-1,yz-1,xz+1,yz+1);
           DC.SelectObject(&Pen);
-          //DC.SetDCPenColor(LinePen);
           p.Format("%4.3f; %4.3f;",x,y);
           DC.TextOutA(floor(xz),floor(yz),p.GetBuffer(),p.GetLength());
+          DC.SelectObject(&LinePen);
         }
         if(nextbreak)
           break;
@@ -400,8 +454,9 @@ void Eegraph::DrawDC()
       }
     }
   }
-
+  this->DrawApproximation();
   this->DrawSaccades();
+  this->DrawStimuls();
 }
 
 void Eegraph::AppendFormatFloat(CString* string,float f,int maxchars)

@@ -9,8 +9,11 @@
 #include "Eegraph.h"
 #include "Saccade.h"
 #include <vector>
+
+
 using namespace std;
 typedef vector <Saccade*> SaccadeVec;
+typedef vector <__int8> StimulVec;
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -19,6 +22,8 @@ typedef vector <Saccade*> SaccadeVec;
  Eegraph* Win;
  ConanData* Conan;
  CSaccadeSearchDlg* dialog;
+ StimulVec StimulNegative;
+ StimulVec StimulPositive;
 // CAboutDlg dialog used for App About
 
 void SetDropDownHeight(CComboBox* pMyComboBox, int itemsToShow)
@@ -115,7 +120,7 @@ void CSaccadeSearchDlg::DoDataExchange(CDataExchange* pDX)
   DDX_Control(pDX, IDC_EDIT12, MinYLengthT);
   DDX_Control(pDX, IDC_EDIT13, MinXLengthT);
   DDX_Control(pDX, IDC_EDIT14, MinTimeOffsetT);
-  DDX_Control(pDX, IDC_EDIT15, StimulCodesT);
+  DDX_Control(pDX, IDC_EDIT15, NegativeStimulCodesT);
   DDX_Control(pDX, IDC_CHECK4, ClearOther);
   DDX_Control(pDX, IDC_EDIT7, CurSaccadeT);
   DDX_Control(pDX, IDC_EDIT16, SacChanT);
@@ -126,7 +131,17 @@ void CSaccadeSearchDlg::DoDataExchange(CDataExchange* pDX)
   DDX_Control(pDX, IDC_EDIT21, SacYEndT);
   DDX_Control(pDX, IDC_EDIT22, SacAmplitudeT);
   DDX_Control(pDX, IDC_EDIT23, SacStimulCodeT);
-  DDX_Control(pDX, IDC_EDIT24, SacLatentTimeT);
+  DDX_Control(pDX, IDC_EDIT24, SacTimeFromCalT);
+  DDX_Control(pDX, IDC_EDIT25, SacTimeFromStimulT);
+  DDX_Control(pDX, IDC_EDIT26, ApproxPrec);
+  DDX_Control(pDX, IDC_EDIT27, AprIterationsT);
+  DDX_Control(pDX, IDC_EDIT28, MinExtremPointsT);
+  DDX_Control(pDX, IDC_CHECK5, UseApproximation);
+  DDX_Control(pDX, IDC_CHECK6, PreprocessAllRecords);
+  DDX_Control(pDX, IDC_COMBO3, SearchMethod);
+  DDX_Control(pDX, IDC_EDIT29, PositiveStimulCodesT);
+  DDX_Control(pDX, IDC_CHECK7, CreateVirtualSaccades);
+  DDX_Control(pDX, IDC_EDIT30, AllSaccades);
 }
 
 BEGIN_MESSAGE_MAP(CSaccadeSearchDlg, CDialog)
@@ -170,6 +185,13 @@ ON_BN_CLICKED(IDC_BUTTON7, &CSaccadeSearchDlg::OnBnClickedButton7)
 ON_BN_CLICKED(IDC_BUTTON14, &CSaccadeSearchDlg::OnBnClickedButton14)
 ON_BN_CLICKED(IDC_BUTTON1, &CSaccadeSearchDlg::OnBnClickedButton1)
 ON_BN_CLICKED(IDC_BUTTON6, &CSaccadeSearchDlg::OnBnClickedButton6)
+ON_EN_CHANGE(IDC_EDIT26, &CSaccadeSearchDlg::OnEnChangeEdit26)
+ON_EN_CHANGE(IDC_EDIT27, &CSaccadeSearchDlg::OnEnChangeEdit27)
+ON_EN_CHANGE(IDC_EDIT28, &CSaccadeSearchDlg::OnEnChangeEdit28)
+ON_BN_CLICKED(IDC_CHECK5, &CSaccadeSearchDlg::OnBnClickedCheck5)
+ON_EN_CHANGE(IDC_EDIT7, &CSaccadeSearchDlg::OnEnChangeEdit7)
+ON_EN_CHANGE(IDC_EDIT29, &CSaccadeSearchDlg::OnEnChangeEdit29)
+ON_EN_CHANGE(IDC_EDIT15, &CSaccadeSearchDlg::OnEnChangeEdit15)
 END_MESSAGE_MAP()
 
 
@@ -204,6 +226,12 @@ BOOL CSaccadeSearchDlg::OnInitDialog()
 
 	//this->OnBnClickedButton7();//load data
 
+  SearchMethod.AddString("free search");
+  SearchMethod.AddString("Stimul based");
+  SearchMethod.AddString("2x Stimul based");
+  SetDropDownHeight(&SearchMethod,3);
+  SearchMethod.SetCurSel(0);
+  OnCbnSelchangeCombo3();
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -232,13 +260,13 @@ void CSaccadeSearchDlg::RecreateEeGraph()
 	GetClientRect(&DRect);			//Получить координаты клиентской части диалога
 	//log.GetWindowRect(&ORect);	//Получить координаты кнопки
 	ScreenToClient(&ORect);			//Преобразовать координаты кнопки из экранных в клиентские
-	WRect.top=DRect.top+280;			//Задать координаты окна
+	WRect.top=DRect.top+255;			//Задать координаты окна
 	WRect.left=DRect.left+120;
   WRect.right =DRect.right-5;
 	WRect.bottom=DRect.bottom-5;
 
 	Win->Create(NULL,NULL,//	WS_CAPTION |//WS_THICKFRAME |//WS_SYSMENU |
-    WS_THICKFRAME|WS_BORDER |WS_VISIBLE, WRect, this,0);
+    WS_BORDER |WS_VISIBLE, WRect, this,0);
   
 }
 
@@ -302,17 +330,12 @@ HCURSOR CSaccadeSearchDlg::OnQueryDragIcon()
 }
 
 
-//void CSaccadeSearchDlg::OnBnClickedButton1()
-//{
-//  Win->changed=1;
-//  Win->WinPaint();
-//}
-
 void CSaccadeSearchDlg::OnCbnSelchangeCombo1()
 {
   Win->hold();
   Conan->CurChannel=chan.GetCurSel();
   this->AutoSetXYOffset();
+  Approximate(Conan->CurChannel,Conan->CurRec);
   Win->changed=1;
   Win->unhold();
   //Win->WinPaint();
@@ -378,6 +401,7 @@ void CSaccadeSearchDlg::OnCbnSelchangeCombo2()
   Win->hold();
   Conan->CurRec=rec.GetCurSel();
   this->AutoSetXYOffset();
+  Approximate(Conan->CurChannel,Conan->CurRec);
   Win->changed=1;
   Win->unhold();
   //Win->WinPaint();
@@ -393,7 +417,7 @@ void CSaccadeSearchDlg::AutoSetXYOffset()
   if(!AutoDefineYOffset.GetCheck())
     return;
 
-  //Win->hold();
+  Win->hold();
   int ichan=Conan->CurChannel;
   int irec=Conan->CurRec;
   float y,x;
@@ -408,13 +432,13 @@ void CSaccadeSearchDlg::AutoSetXYOffset()
     if(y<miny)
       miny=y;
   }
-  miny-=Win->ScreenGraphHeight()/3.0;
+  miny-=Win->RealGraphHeight()/2.0;
   CString tmp;
   tmp.Format("%f",miny);
   yoffset.SetWindowTextA(tmp);
   tmp="0";
   xoffset.SetWindowTextA(tmp);
-  //Win->unhold();
+  Win->unhold();
 }
 
 void CSaccadeSearchDlg::OnBnClickedButton2()
@@ -494,6 +518,7 @@ void CSaccadeSearchDlg::OnLButtonDown(UINT nFlags, CPoint point)
     tmpf=atof(tmp.GetBuffer())*2;
     tmp.Format("%f",tmpf);
     yscale.SetWindowTextA(tmp);
+    Win->changed=1;
   }
   Win->unhold();
   //Win->WinPaint();
@@ -550,6 +575,7 @@ void CSaccadeSearchDlg::OnRButtonDown(UINT nFlags, CPoint point)
     tmp.Format("%f",Win->RulerPointY);
     rulery.SetWindowTextA(tmp);
   }
+  Win->changed=1;
   Win->unhold();
   //Win->WinPaint();
   CDialog::OnRButtonDown(nFlags, point);
@@ -579,6 +605,25 @@ void CSaccadeSearchDlg::OnClose()
 
 void CSaccadeSearchDlg::OnCbnSelchangeCombo3()
 {
+  int z=SearchMethod.GetCurSel();
+  if(z==0)//simple search
+  {
+    PositiveStimulCodesT.EnableWindow(0);
+    NegativeStimulCodesT.EnableWindow(0);
+    CreateVirtualSaccades.EnableWindow(0);
+  }
+  else if(z==1)
+  {
+    PositiveStimulCodesT.EnableWindow(1);
+    NegativeStimulCodesT.EnableWindow(1);
+    CreateVirtualSaccades.EnableWindow(1);
+  }
+  else if(z==2)
+  {
+    PositiveStimulCodesT.EnableWindow(1);
+    NegativeStimulCodesT.EnableWindow(1);
+    CreateVirtualSaccades.EnableWindow(1);
+  }
 }
 
 
@@ -609,8 +654,14 @@ void CSaccadeSearchDlg::OnBnClickedRadio3()
 void CSaccadeSearchDlg::OutputSaccades()
 {
   CString tmp;
-  tmp.Format("%d/%d",this->CurSaccade+1,Conan->Saccades.size());
-  CurSaccadeT.SetWindowTextA(tmp);
+  CurSaccadeT.GetWindowTextA(tmp);
+  if(atoi(tmp)!=this->CurSaccade+1)
+  {
+    tmp.Format("%d",this->CurSaccade+1);
+    CurSaccadeT.SetWindowTextA(tmp);
+  }
+  tmp.Format("%d",Conan->Saccades.size());
+  AllSaccades.SetWindowTextA(tmp);  
   if(Conan->Saccades.size()==0)
     return;
   Saccade* s=Conan->Saccades.at(this->CurSaccade);
@@ -632,30 +683,75 @@ void CSaccadeSearchDlg::OutputSaccades()
   this->SacAmplitudeT.SetWindowTextA(tmp);
   tmp.Format("%x",s->StimulCode);
   this->SacStimulCodeT.SetWindowTextA(tmp);
-  tmp.Format("%1.1f",s->LatentTime);
-  this->SacLatentTimeT.SetWindowTextA(tmp);
+  tmp.Format("%1.1f",s->TimeFromCal);
+  this->SacTimeFromCalT.SetWindowTextA(tmp);
+  tmp.Format("%1.1f",s->TimeFromStimul);
+  this->SacTimeFromStimulT.SetWindowTextA(tmp);
+
   Win->hold();
   Conan->CurChannel=s->chan;
   Conan->CurRec=s->rec;
   chan.SetCurSel(s->chan);
   rec.SetCurSel(s->rec);
-  Win->unhold();
   FocusToSaccade();
+  Win->unhold();
 }
 
+int CSaccadeSearchDlg::SetStimul(int rec,int n)
+{
+  //check for stimul value
+  Stimul=Conan->Discr[rec][n].Elder;
+  if(Stimul!=2 && Stimul!=LastStimulCode)
+  {
+    float x=Win->XToRealCoordsFromPoint(n);
+    if(Stimul==128)//calibrating,80 in hex
+    {
+      LastCalStimulTime=x;
+      return 0;
+    }
+    else
+    {
+      LastStimulTime=x;
+      LastStimulCode=Stimul;
+      return Stimul;
+    }
+  }
+  else return 0;
+}
+
+int CSaccadeSearchDlg::GetStimulSign(__int8 stimul)
+{
+  for(int i=0;i<StimulNegative.size();i++)
+    if (StimulNegative.at(i)==stimul)
+      return -1;
+  for(int i=0;i<StimulPositive.size();i++)
+    if (StimulPositive.at(i)==stimul)
+      return 1;
+
+  
+  CString tmp;
+  tmp.Format("Stimul code '%x' not found as positive or negative!",stimul);
+  MessageBox(tmp,"ERROR",MB_OK);
+  return 0;
+  
+}
 void CSaccadeSearchDlg::OnBnClickedButton9()
 {
   if((ClearOther.GetCheck())&&(Conan->Saccades.size()!=0))
   {
-    int c=MessageBox("Are you sure that you want to perform a new search? All currently found values will be lost!","Confirmation",MB_OKCANCEL);
+    int c=MessageBox("Are you sure that you want to clear all currently found results?","Confirmation",MB_OKCANCEL);
     if(c==IDCANCEL)
       return;
   }
   SaccadeVec Saccades;
-
+  //set stimul params
+  LastStimulCode=0;
+  Stimul=0;
+  LastStimulTime=0;
+  LastCalStimulTime=0;
   //get search params
   float MinYSpeed,MinSpeedPoints,MinYLength,MinXLength,MinTimeOffset;
-  CString StimulCodes,tmp;
+  CString tmp;
 
   MinYSpeedT.GetWindowTextA(tmp);
   MinYSpeed=atof(tmp);
@@ -668,91 +764,266 @@ void CSaccadeSearchDlg::OnBnClickedButton9()
   MinTimeOffsetT.GetWindowTextA(tmp);
   MinTimeOffset=atof(tmp);
 
-  StimulCodesT.GetWindowTextA(StimulCodes);
+  int MinTimeBeforeStimul=0;//must be defined later
+  int MaxTimeAfterStimul=1500;
+
+  bool CreateVirtual=0;
+  if(CreateVirtualSaccades.GetCheck())
+    CreateVirtual=1;
 
   //init search vars
   int YPoints=0;
   float x=0;
   float y=0;
-  int rec=Conan->CurRec;
   int chan=Conan->CurChannel;
   float y1;
   bool sign;
-  int method=0;
-  if(method==0)//simple search
+  float* YCoords;
+  float* YAppr;
+  int recfrom,recto;
+  
+  if(PreprocessAllRecords.GetCheck())//for all records
   {
-    if(Conan->Eeg[rec][chan][1]-Conan->Eeg[rec][chan][0]>0)
+    recfrom=0;
+    recto=Conan->Header->nRec-1;
+  }
+  else//only for selected
+  {
+    recfrom=Conan->CurRec;
+    recto=Conan->CurRec;
+  }
+  int method=SearchMethod.GetCurSel();
+
+  for(int rec=recfrom;rec<=recto;rec++)
+  {
+    
+    if(Conan->Approximate)
+    {
+      YAppr=Conan->EegApproximated[rec][chan];
+      YCoords=Conan->Eeg[rec][chan];
+      Approximate(chan,rec);
+    }
+    else
+    {
+      YAppr=Conan->Eeg[rec][chan];
+      YCoords=Conan->Eeg[rec][chan];
+    }
+
+    if(YCoords[1]-YCoords[0]>=0)//sign of the first change
       sign=1;
     else
       sign=0;
-    for(int n=0;n<Conan->NDataReal[rec]-1;n++)
+
+    if(method==0)//simple search
     {
-        x=Win->XToRealCoordsFromPoint(n);
-        if(x<MinTimeOffset)//not still time...
-          continue;
-        y=Conan->Eeg[rec][chan][n];
-        y1=Conan->Eeg[rec][chan][n+1];
-        bool sign2;//check for speed sign
-        if(y1-y>0)
-          sign2=1;
-        else
-          sign2=0;
-        if(abs(y1-y)>=MinYSpeed)//probably, saccade point found
-        {
-          if(sign2!=sign)
-            YPoints=1;//the first speed point after sign change
+      for(int n=0;n<Conan->NDataReal[rec]-1;n++)
+      {
+          x=Win->XToRealCoordsFromPoint(n);
+          if(x<MinTimeOffset)//not still time...
+            continue;
+          y=YAppr[n];
+          y1=YAppr[n+1];
+          bool sign2;//check for speed sign
+          if(y1-y>=0)
+            sign2=1;
           else
-            YPoints++;
-        }
-        else
-          YPoints=0;
-        sign=sign2;
-        if(YPoints>=MinSpeedPoints)
-        {
-          //probably, saccade found :)
-          //going to it's last point
-          bool sign2=sign;
-          while((abs(y1-y)>=MinYSpeed)&&(sign2==sign))
+            sign2=0;
+          SetStimul(rec,n);
+          if(abs(y1-y)>=MinYSpeed)//probably, saccade point found
           {
-            n++;
-            YPoints++;
-            y=Conan->Eeg[rec][chan][n];
-            y1=Conan->Eeg[rec][chan][n+1];
-            if(y1-y>0)
-              sign2=1;
+            if(sign2!=sign)
+              YPoints=1;//the first speed point after sign change
             else
-              sign2=0;
+              YPoints++;
           }
-          n--;//last point was passed in extra circle
-          YPoints--;
+          else
+            YPoints=0;
           sign=sign2;
-          //y=Conan->Eeg[rec][chan][n];
-          //y1=Conan->Eeg[rec][chan][n+1];
-          
-          Saccade* sac=new Saccade();
-          sac->chan=Conan->CurChannel;
-          sac->rec=Conan->CurRec;
-          sac->Points=YPoints;
-          sac->EndX=Win->XToRealCoordsFromPoint(n+1);
-          sac->EndY=Conan->Eeg[rec][chan][n+1];
-          //sac->Sign=sign;
-          sac->BeginX=Win->XToRealCoordsFromPoint(n+1-YPoints);
-          sac->BeginY=Conan->Eeg[rec][chan][n+1-YPoints];
-          
-          if((sac->AmplitudeX()<MinXLength)||(abs(sac->AmplitudeY())<MinYLength))
+          if(YPoints>=MinSpeedPoints)
           {
-            delete(sac);
+            //probably, saccade found :)
+            //going to it's last point
+            bool sign2=sign;
+            while((abs(y1-y)>=MinYSpeed)&&(sign2==sign))
+            {
+              SetStimul(rec,n);
+              n++;
+              YPoints++;
+              y=YAppr[n];
+              y1=YAppr[n+1];
+              if(y1-y>=0)
+                sign2=1;
+              else
+                sign2=0;
+            }
+            n--;//last point was passed in extra circle
+            YPoints--;
+            sign=sign2;
+            
+            Saccade* sac=new Saccade();
+            sac->chan=chan;
+            sac->rec=rec;
+            sac->Points=YPoints;
+            sac->EndX=Win->XToRealCoordsFromPoint(n+1);
+            sac->EndY=YCoords[n+1];
+            sac->BeginX=Win->XToRealCoordsFromPoint(n+1-YPoints);
+            sac->BeginY=YCoords[n+1-YPoints];
+            sac->StimulCode=LastStimulCode;
+            sac->TimeFromCal=sac->BeginX-LastCalStimulTime;
+            sac->TimeFromStimul=sac->BeginX-LastStimulTime;
+
+            if((sac->AmplitudeX()<MinXLength)||(abs(sac->AmplitudeY())<MinYLength))
+            {
+              delete(sac);
+            }
+            else//saccade is fine too
+            {
+              Saccades.push_back(sac);
+            }
+            YPoints=0;
           }
-          else//saccade is fine too
+      }
+    }
+    else//method = 2 || 3. stimul based search
+    {
+    
+      for(int n=0;n<Conan->NDataReal[rec]-1;n++)
+      {
+          x=Win->XToRealCoordsFromPoint(n);
+          y=YCoords[n];
+          if(x<MinTimeOffset)//not still time...
+            continue;
+          unsigned __int8 Stimul=SetStimul(rec, n);
+          if(Stimul)//new stimul
+            //search for saccade, corresponding to this stimul
           {
-            Saccades.push_back(sac);
+            int step=1;// add counter
+            //create "virtual" saccade
+
+            Saccade* sac=new Saccade();
+            sac->chan=chan;
+            sac->rec=rec;
+            sac->Points=0;
+            sac->EndX=x+MaxTimeAfterStimul;
+            sac->EndY=y;
+            sac->BeginX=x;
+            sac->BeginY=y;
+            sac->StimulCode=Stimul;
+            sac->TimeFromCal=0;
+            sac->TimeFromStimul=0;
+            bool SacFound=false;
+            //find calibration stimul
+            while((n+step<Conan->NDataReal[rec]-1) && Conan->Discr[rec][n+step].Elder!=128)
+              step++;
+            if(Conan->Discr[rec][n+step].Elder!=128)
+            {
+              //calibration stimul not found
+              if(CreateVirtual)//create virtual saccade
+              {
+                Saccades.push_back(sac);
+                continue;
+              }
+              else
+              {
+                delete(sac);//discard & continue
+                continue;
+              }
+            }
+            LastCalStimulTime=Win->XToRealCoordsFromPoint(n+step);
+            //calibration stimul ok. search for saccade.
+            
+            //detect saccade sign
+            int sign=this->GetStimulSign(Stimul);
+            if(sign==0)//undefined sign oO
+            {
+              MessageBox("There was stimul with undefined sign. Please define it first. Search is being terminated.","Error",MB_OK);
+              return;//terminate work
+            }
+
+            YPoints=0;
+            while(x<=this->LastCalStimulTime+MaxTimeAfterStimul)
+            {
+              step++;
+              x=Win->XToRealCoordsFromPoint(n+step);              
+              y=YAppr[n+step];
+              y1=YAppr[n+step+1];
+              if(x<MinTimeBeforeStimul+this->LastCalStimulTime)
+                continue;//too early
+              //almost same as free search
+
+              int sign2;//check for speed sign
+              if(y1-y>=0)
+                sign2=1;
+              else
+                sign2=-1;
+              if(sign!=sign2)
+              {
+                YPoints=0;
+                continue;//wrong sign
+              }
+              if(abs(y1-y)>=MinYSpeed)//probably, saccade point found
+              {
+                  YPoints++;
+              }
+              else
+                YPoints=0;
+              if(YPoints>=MinSpeedPoints)
+              {
+                //probably, saccade found :)
+                //going to it's last point
+                while((abs(y1-y)>=MinYSpeed)&&(sign2==sign))
+                {
+                  step++;
+                  YPoints++;
+                  y=YAppr[n+step];
+                  y1=YAppr[n+step+1];
+                  if(y1-y>=0)
+                    sign2=1;
+                  else
+                    sign2=-1;
+                }
+                step--;//last point was passed in extra circle
+                YPoints--;
+                
+                Saccade* sacF=new Saccade();
+                sacF->chan=chan;
+                sacF->rec=rec;
+                sacF->Points=YPoints;
+                sacF->EndX=Win->XToRealCoordsFromPoint(n+step+1);
+                sacF->EndY=YCoords[n+step+1];
+                sacF->BeginX=Win->XToRealCoordsFromPoint(n+step+1-YPoints);
+                sacF->BeginY=YCoords[n+step+1-YPoints];
+                sacF->StimulCode=Stimul;
+                sacF->TimeFromCal=sacF->BeginX-LastCalStimulTime;
+                sacF->TimeFromStimul=sacF->BeginX-LastStimulTime;
+
+                if((sacF->AmplitudeX()<MinXLength)||(abs(sacF->AmplitudeY())<MinYLength))
+                {
+                  delete(sacF);
+                }
+                else//saccade is fine too
+                {
+                  Saccades.push_back(sacF);
+                  SacFound=1;
+                  break;
+                }
+              }
+            }
+            if(SacFound)
+              delete(sac);//we already have a kawaii saccade, no need for dummy
+             else
+            {
+              //if we're here, it means that saccade was not found.
+              //Then - insert virtual - if we need to...
+              if(CreateVirtual)//create virtual saccade
+                Saccades.push_back(sac);
+              else
+                delete(sac);//discard & continue
+            }
           }
-          YPoints=0;
-        }
-        //x+=(float)Conan->Header->freq/1000;
+      }
     }
   }
-
   if(ClearOther.GetCheck())
   {
     this->CurSaccade=0;
@@ -764,7 +1035,10 @@ void CSaccadeSearchDlg::OnBnClickedButton9()
     Conan->Saccades.push_back(Saccades.at(i));
   }
   this->CurSaccade=Conan->Saccades.size()-s;//the first from the new
+  
+  Win->changed=1;
   FocusToSaccade();
+  Win->WinPaint();
   OutputSaccades();
 }
 
@@ -818,6 +1092,7 @@ void CSaccadeSearchDlg::FocusToSaccade()
   xoffset.SetWindowTextA(tmp);
   tmp.Format("%f",y);
   yoffset.SetWindowTextA(tmp);
+  Win->changed=1;
   Win->unhold();
 }
 
@@ -852,10 +1127,14 @@ void CSaccadeSearchDlg::OnBnClickedButton12()
 
   tmp.Format("%1.4f",s->AmplitudeY());
   this->SacAmplitudeT.SetWindowTextA(tmp);
+
   this->SacStimulCodeT.GetWindowTextA(tmp);
-  s->StimulCode=atoi(tmp);
-  this->SacLatentTimeT.GetWindowTextA(tmp);
-  s->LatentTime=atof(tmp);
+  //s->StimulCode=atoi(tmp);
+  sscanf_s(tmp,"%x",&s->StimulCode);
+  this->SacTimeFromCalT.GetWindowTextA(tmp);
+  s->TimeFromCal=atof(tmp);
+  this->SacTimeFromStimulT.GetWindowTextA(tmp);
+  s->TimeFromStimul=atof(tmp);
   OutputSaccades();
 }
 
@@ -887,32 +1166,32 @@ void CSaccadeSearchDlg::OnBnClickedButton7()
   Conan=ReadConanFile(path.GetBuffer(),&log);
   if(Conan==NULL)
     return;
+
+  chan.ResetContent();
+  rec.ResetContent();
   CString chnum,chname,channels;
   channels.Append(Conan->Header->chNames);
-  //int pos=0;
-  //int pos2=0;
   for(int i=0;i<Conan->Header->nChan;i++)
   {
-    //pos2=channels.Find(" ",pos);
     chname=channels.Mid(i*4,4);
     chnum.Format("%d ",i+1);
     chnum.Append(chname);
     chan.AddString(chnum.GetBuffer());
-    //pos=pos2+1;
   }
   SetDropDownHeight(&chan,Conan->Header->nChan);
-  chan.SetCurSel(0);
+  
+  chan.SetCurSel(25);
+  Conan->CurChannel=25;
 
   CString RecNum;
   for(int i=0;i<Conan->Header->nRec;i++)
   {
     RecNum.Format("%d ",i+1);
     rec.AddString(RecNum.GetBuffer());
-    //pos=pos2+1;
   }
   SetDropDownHeight(&rec,20);
   rec.SetCurSel(0);
-
+  Conan->CurRec=0;
 
 
   CString tmp;
@@ -922,23 +1201,31 @@ void CSaccadeSearchDlg::OnBnClickedButton7()
 
 	this->RecreateEeGraph();	
   Win->hold();
-  xscale.SetWindowTextA("10");
-  yscale.SetWindowTextA("1");
+  xscale.SetWindowTextA("0.2");
+  yscale.SetWindowTextA("0.75");
   xoffset.SetWindowTextA("0");
   yoffset.SetWindowTextA("0");
 
   AutoDefineYOffset.SetCheck(1);
   OnBnClickedRadio2();
   Win->unhold();
-  this->AutoSetXYOffset();
+  AutoSetXYOffset();
 
 
   
   MinYSpeedT.SetWindowTextA("1");
-  MinSpeedPointsT.SetWindowTextA("1");
-  MinYLengthT.SetWindowTextA("1");
+  MinSpeedPointsT.SetWindowTextA("20");
+  MinYLengthT.SetWindowTextA("100");
   MinXLengthT.SetWindowTextA("1");
   MinTimeOffsetT.SetWindowTextA("0");
+
+  
+  ApproxPrec.SetWindowTextA("1");
+  AprIterationsT.SetWindowTextA("5");
+  MinExtremPointsT.SetWindowTextA("10");
+
+  UseApproximation.SetCheck(1);
+  OnBnClickedCheck5();
 }
 
 void CSaccadeSearchDlg::OnBnClickedButton14()
@@ -961,46 +1248,17 @@ void CSaccadeSearchDlg::OnBnClickedButton14()
     this->SacYEndT.SetWindowTextA("");
     this->SacAmplitudeT.SetWindowTextA("");
     this->SacStimulCodeT.SetWindowTextA("");
-    this->SacLatentTimeT.SetWindowTextA("");
+    this->SacTimeFromCalT.SetWindowTextA("");
+    this->SacTimeFromStimulT.SetWindowTextA("");
   }
   OutputSaccades();
-  // TODO: Add your control notification handler code here
 }
 
 void CSaccadeSearchDlg::OnBnClickedButton1()
 {
   CString save,tmp;
-  for(int i=0;i<Conan->Saccades.size();i++)
-  {
-    Saccade* s=Conan->Saccades.at(i);
-    tmp.Format("%d",s->chan+1);
-    save.Append(tmp);
-    save.Append(" ");
-    tmp.Format("%d",s->rec+1);
-    save.Append(tmp);
-    save.Append(" ");
-    tmp.Format("%1.1f",s->BeginX);
-    save.Append(tmp);
-    save.Append(" ");
-    tmp.Format("%1.4f",s->BeginY);
-    save.Append(tmp);
-    save.Append(" ");
-    tmp.Format("%1.1f",s->EndX);
-    save.Append(tmp);
-    save.Append(" ");
-    tmp.Format("%1.4f",s->EndY);
-    save.Append(tmp);
-    save.Append(" ");
-    tmp.Format("%1.4f",s->AmplitudeY());
-    save.Append(tmp);
-    save.Append(" ");
-    tmp.Format("%x",s->StimulCode);
-    save.Append(tmp);
-    save.Append(" ");
-    tmp.Format("%1.1f",s->LatentTime);
-    save.Append(tmp);
-    save.Append("\n");
-  }
+  int method=SearchMethod.GetCurSel();
+  Saccade* s;
   CString path;
   CFileDialog dlg(FALSE/*Open=TRUE Save=False*/,"sac"/*Filename Extension*/,""/*Initial Filename*/,OFN_ENABLESIZING|OFN_EXPLORER/*Flags*/,"Saccade file(*.sac)|*.sac||"/*Filetype Filter*/,this/*parent Window*/);
 	int z=dlg.DoModal();
@@ -1009,7 +1267,23 @@ void CSaccadeSearchDlg::OnBnClickedButton1()
 		path=dlg.GetPathName();
     FILE * pFile;
     fopen_s(&pFile, path, "w");
-    fwrite(save,1,save.GetLength(),pFile);
+  for(unsigned int i=0;i<Conan->Saccades.size();i++)
+  {
+    s=Conan->Saccades.at(i);
+    fprintf(pFile,"%d %d %1.1f %1.4f %1.1f %1.4f %1.4f %x %1.1f %1.1f",s->chan+1,s->rec+1,s->BeginX,s->BeginY,s->EndX,s->EndY,s->AmplitudeY(),s->StimulCode,s->TimeFromCal,s->TimeFromStimul);
+    if(method==0 || method==1)
+      fwrite("\n",1,1,pFile);
+    else if(method==2)//double saccade
+    {
+      if(Conan->Saccades.size()>i+1)
+      {
+        i++;
+        s=Conan->Saccades.at(i);
+        fprintf(pFile,"%1.1f %1.4f %1.1f %1.4f %1.4f %x %1.1f %1.1f",s->BeginX,s->BeginY,s->EndX,s->EndY,s->AmplitudeY(),s->StimulCode,s->TimeFromCal,s->TimeFromStimul);
+      }
+    }
+  }
+    //fwrite(save,1,save.GetLength(),pFile);
     fclose(pFile);
   }
 }
@@ -1030,9 +1304,6 @@ void CSaccadeSearchDlg::OnBnClickedButton6()
   {
 		path=dlg.GetPathName();
     FILE * pFile;
-    long lSize;
-    char * buffer;
-    size_t result;
     fopen_s(&pFile, path.GetBuffer(), "r");
     if (pFile==NULL)
     {
@@ -1051,7 +1322,7 @@ void CSaccadeSearchDlg::OnBnClickedButton6()
     while(true)
     {
       Saccade* s=new Saccade();
-      r=fscanf(pFile,"%d %d %f %f %f %f %f %x %f\n",&s->chan,&s->rec,&s->BeginX,&s->BeginY,&s->EndX,&s->EndY,&amp,&s->StimulCode,&s->LatentTime);
+      r=fscanf_s(pFile,"%d %d %f %f %f %f %f %x %f %f\n",&s->chan,&s->rec,&s->BeginX,&s->BeginY,&s->EndX,&s->EndY,&amp,&s->StimulCode,&s->TimeFromCal,&s->TimeFromStimul);
       if(r==EOF)
       {
         delete(s);
@@ -1065,4 +1336,175 @@ void CSaccadeSearchDlg::OnBnClickedButton6()
     OutputSaccades();
   }
       return;
+}
+
+void CSaccadeSearchDlg::OnEnChangeEdit26()
+{
+  CString tmp;
+  ApproxPrec.GetWindowTextA(tmp);
+  Conan->AproxCoef=atoi(tmp);
+  Approximate(Conan->CurChannel,Conan->CurRec);
+}
+
+void CSaccadeSearchDlg::Approximate(int chan, int rec)
+{  
+  
+  if(!(Conan->Approximate&&Conan->AproxCoef&&Conan->Iterations&&Conan->MinExtremumPoints))
+  {
+    //Conan->Approximate=0;
+    UseApproximation.SetCheck(0);
+    Win->changed=1;
+    Win->WinPaint();
+    return;
+  }
+  //Conan->Approximate=1;
+
+  if(Conan->EegApproximated==NULL)//init
+  {    
+    Conan->EegApproximated=new float** [Conan->Header->nRec];      
+    for (int i=0;i<Conan->Header->nRec;i++)
+    {        
+      Conan->EegApproximated[i]=new float*[Conan->Header->nChan];
+      for (int j=0;j<Conan->Header->nChan;j++)
+      {
+        Conan->EegApproximated[i][j]=new float[Conan->NDataReal[i]];
+      }
+    }
+  }
+
+  //init points
+  for(int k=0;k<Conan->NDataReal[rec];k++)
+  {
+    Conan->EegApproximated[rec][chan][k]=Conan->Eeg[rec][chan][k];
+  }
+  //now count approximation for current channel&record
+
+  for(int a=0;a<Conan->Iterations;a++){
+  for(int k=Conan->MinExtremumPoints+1;k<Conan->NDataReal[rec]-Conan->MinExtremumPoints+1;k++)
+  {
+    //check if that's global extremum. if so - exclude.
+    bool GlobalExtremum=true;
+    for(int z=1;z<Conan->MinExtremumPoints+1;z++)
+    {
+      if(((Conan->EegApproximated[rec][chan][k+z] - Conan->EegApproximated[rec][chan][k])>0) != ((Conan->EegApproximated[rec][chan][k-z] - Conan->Eeg[rec][chan][k])>0))
+        //if those signs are the same, it means that point is extremim
+      {
+        GlobalExtremum=false;
+        break;
+      }    
+    }
+    if(GlobalExtremum)
+    {
+      Conan->EegApproximated[rec][chan][k]=Conan->EegApproximated[rec][chan][k];
+      continue;//no need to change value for global extremum points.
+    }
+    
+    //detect if it is a local extremum - same but with other parameters.
+
+    bool LocalExtremum=true;
+    for(int z=1;z<Conan->AproxCoef;z++)
+    {
+      if(((Conan->EegApproximated[rec][chan][k+z] - Conan->EegApproximated[rec][chan][k])>0) != ((Conan->EegApproximated[rec][chan][k-z] - Conan->EegApproximated[rec][chan][k])>0))
+        //if those signs are the same, it means that point is extremim
+      {
+        LocalExtremum=false;
+        break;
+      }    
+    }
+    if(LocalExtremum)
+      //aproximate to the middle of nearest points
+    {
+      Conan->EegApproximated[rec][chan][k]=
+        (Conan->EegApproximated[rec][chan][k+1]+
+        Conan->EegApproximated[rec][chan][k-1])
+        /2.0;
+      continue;
+    }
+
+    //if it is not any extremum - the value also stays as is
+    Conan->EegApproximated[rec][chan][k]=Conan->EegApproximated[rec][chan][k];
+  }
+  }
+  Win->changed=1;
+  Win->WinPaint();
+}
+void CSaccadeSearchDlg::OnEnChangeEdit27()
+{
+  CString tmp;
+  AprIterationsT.GetWindowTextA(tmp);
+  Conan->Iterations=atoi(tmp);
+  Approximate(Conan->CurChannel,Conan->CurRec);
+}
+
+void CSaccadeSearchDlg::OnEnChangeEdit28()
+{
+  CString tmp;
+  MinExtremPointsT.GetWindowTextA(tmp);
+  Conan->MinExtremumPoints=atoi(tmp);
+  Approximate(Conan->CurChannel,Conan->CurRec);
+}
+
+void CSaccadeSearchDlg::OnBnClickedCheck5()
+{
+  if(UseApproximation.GetCheck())
+  {
+    ApproxPrec.EnableWindow(1);
+    AprIterationsT.EnableWindow(1);
+    MinExtremPointsT.EnableWindow(1);
+    Conan->Approximate=1;
+  }
+  else
+  {
+    MinExtremPointsT.EnableWindow(0);
+    AprIterationsT.EnableWindow(0);
+    ApproxPrec.EnableWindow(0);
+    Conan->Approximate=0;
+  }
+  Approximate(Conan->CurChannel,Conan->CurRec);
+  Win->changed=1;
+  Win->WinPaint();
+}
+
+void CSaccadeSearchDlg::OnEnChangeEdit7()
+{
+  //next saccade
+  CString tmp;
+  CurSaccadeT.GetWindowTextA(tmp);
+  unsigned int c=atoi(tmp);
+  if((c>Conan->Saccades.size()) ||(Conan->Saccades.size()==0))
+    return;//saccade num, not valid
+  this->CurSaccade=c-1;
+  OutputSaccades();
+  Conan->CurChannel=Conan->Saccades.at(this->CurSaccade)->chan;
+  Conan->CurRec=Conan->Saccades.at(this->CurSaccade)->rec;
+  FocusToSaccade();
+}
+
+void CSaccadeSearchDlg::ScanHexToText(CEdit* from,StimulVec* to)
+{
+  int s=from->GetWindowTextLengthA();
+  char* buf=new char[s+1];
+  from->GetWindowTextA(buf,s+1);
+  int c=0;
+  for(int i=0;i<s;i++)
+  {
+    if(i==0)
+      sscanf((&buf[0]+i),"%x",&c);
+    else if(buf[i]=='\n' && (i+1<s))
+      sscanf((&buf[0]+i+1),"%x",&c);
+    else
+      continue;
+    to->push_back(c);
+  }
+  delete[] buf;
+}
+void CSaccadeSearchDlg::OnEnChangeEdit29()
+{
+  StimulPositive.clear();
+  ScanHexToText(&PositiveStimulCodesT,&StimulPositive);
+}
+void CSaccadeSearchDlg::OnEnChangeEdit15()
+{
+  StimulNegative.clear();
+  ScanHexToText(&NegativeStimulCodesT,&StimulNegative);
 }

@@ -7,7 +7,7 @@
 #include "Eegraph.h"
 #include "ConanData.h"
 #include "afxwin.h"
-
+typedef vector <__int8> StimulVec;
 
 // CSaccadeSearchDlg dialog
 class CSaccadeSearchDlg : public CDialog
@@ -90,7 +90,7 @@ public:
  CEdit MinYLengthT;
  CEdit MinXLengthT;
  CEdit MinTimeOffsetT;
- CEdit StimulCodesT;
+ CEdit NegativeStimulCodesT;
  CButton ClearOther;
  int CurSaccade;
  CEdit CurSaccadeT;
@@ -105,8 +105,9 @@ public:
  CEdit SacYEndT;
  CEdit SacAmplitudeT;
  CEdit SacStimulCodeT;
- CEdit SacLatentTimeT;
+ CEdit SacTimeFromCalT;
  void FocusToSaccade();
+ int SetStimul(int rec,int n);
  afx_msg void OnBnClickedButton12();
  afx_msg void OnBnClickedButton13();
  afx_msg void OnBnClickedButton7();
@@ -114,4 +115,31 @@ public:
  afx_msg void OnBnClickedButton14();
  afx_msg void OnBnClickedButton1();
  afx_msg void OnBnClickedButton6();
+// afx_msg void OnMove(int x, int y);
+ 
+  unsigned __int8 LastStimulCode;
+  unsigned __int8 Stimul;
+  float LastStimulTime;
+  float LastCalStimulTime;
+  CEdit SacTimeFromStimulT;
+//  afx_msg void OnBnClickedButton17();
+  afx_msg void OnEnChangeEdit26();
+  CEdit ApproxPrec;
+  afx_msg void OnEnChangeEdit27();
+  CEdit AprIterationsT;
+  void Approximate(int chan, int rec);
+  afx_msg void OnEnChangeEdit28();
+  CEdit MinExtremPointsT;
+  CButton UseApproximation;
+  afx_msg void OnBnClickedCheck5();
+  CButton PreprocessAllRecords;
+  CComboBox SearchMethod;
+  CEdit PositiveStimulCodesT;
+  CButton CreateVirtualSaccades;
+  CEdit AllSaccades;
+  afx_msg void OnEnChangeEdit7();
+  afx_msg void OnEnChangeEdit29();
+  int GetStimulSign(__int8 stimul);
+  afx_msg void OnEnChangeEdit15();
+  void ScanHexToText(CEdit* from,StimulVec* to);
 };
