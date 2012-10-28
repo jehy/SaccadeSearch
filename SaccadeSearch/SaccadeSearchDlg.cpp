@@ -277,7 +277,7 @@ void CSaccadeSearchDlg::RecreateEeGraph()
 	GetClientRect(&DRect);			//Получить координаты клиентской части диалога
 	//log.GetWindowRect(&ORect);	//Получить координаты кнопки
 	ScreenToClient(&ORect);			//Преобразовать координаты кнопки из экранных в клиентские
-	WRect.top=DRect.top+285;			//Задать координаты окна
+	WRect.top=DRect.top+305;			//Задать координаты окна
 	WRect.left=DRect.left+120;
   WRect.right =DRect.right-5;
 	WRect.bottom=DRect.bottom-5;
@@ -1433,7 +1433,7 @@ void CSaccadeSearchDlg::OnBnClickedButton1()
   {
     if(!OhFileExists)
     {
-      header="File_Name Record Time_Between_Stimuls Stimul_1_code Stimul_2_code 1_Saccade_Latent_Time 2_Saccade_Latent_Time";
+      header="File_Name Record Time_Between_Stimuls Stimul_1_code Stimul_2_code 1_Saccade_Latent_Time 2_Saccade_Latent_Time 1_Amplitude 2_Amplitude";
       fwrite(header,1,header.GetLength(),pFile);
       fwrite("\n",1,1,pFile);
     }
@@ -1460,14 +1460,14 @@ void CSaccadeSearchDlg::OnBnClickedButton1()
       else if(SacQ==1)
       {
         s=Conan->Saccades.at(SacNum-1);
-        fprintf(pFile,"%s %d - %x - %1.0f -",path.GetBuffer(),s->rec+1,s->StimulCode,s->TimeFromCal);
+		fprintf(pFile,"%s %d - %x - %1.0f - %1.4f -",path.GetBuffer(),s->rec+1,s->StimulCode,s->TimeFromCal,s->AmplitudeY());
       }
       else if(SacQ==2)
       {
         s=Conan->Saccades.at(SacNum-2);
         s2=Conan->Saccades.at(SacNum-1);
         float TimeBetweenStimul=abs(s->BeginX-s->TimeFromStimul-(s2->BeginX-s2->TimeFromStimul));
-        fprintf(pFile,"%s %d %1.0f %x %x %1.0f %1.0f",path.GetBuffer(), s->rec+1,TimeBetweenStimul,s->StimulCode,s2->StimulCode,s->TimeFromCal,s2->TimeFromCal);
+        fprintf(pFile,"%s %d %1.0f %x %x %1.0f %1.0f %1.4f %1.4f",path.GetBuffer(), s->rec+1,TimeBetweenStimul,s->StimulCode,s2->StimulCode,s->TimeFromCal,s2->TimeFromCal,s->AmplitudeY(),s2->AmplitudeY());
       }
       fwrite("\n",1,1,pFile);
     }
