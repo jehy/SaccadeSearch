@@ -11,6 +11,8 @@ Saccade::Saccade(void)
   TimeFromCal=0;
   TimeFromStimul=0;
   StimulCode=0;
+  CalStimulTime=0;
+  StimulTime=0;
   Points=0;
   chan=0;
   rec=0;

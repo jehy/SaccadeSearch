@@ -14,6 +14,8 @@ public:
   float TimeFromCal;
   unsigned __int8 StimulCode;
   int Points;
+  float CalStimulTime;
+  float StimulTime;
   int chan;
   int rec;
 public:

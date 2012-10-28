@@ -19,11 +19,16 @@ typedef vector <__int8> StimulVec;
 #define new DEBUG_NEW
 #endif
 
+
+  int MinTimeBeforeStimul=0;//must be defined later
+  int MaxTimeAfterStimul=1500;
+
  Eegraph* Win;
  ConanData* Conan;
  CSaccadeSearchDlg* dialog;
  StimulVec StimulNegative;
  StimulVec StimulPositive;
+ bool FirstLoad=true;
 // CAboutDlg dialog used for App About
 
 void SetDropDownHeight(CComboBox* pMyComboBox, int itemsToShow)
@@ -200,6 +205,8 @@ ON_BN_CLICKED(IDC_BUTTON10, &CSaccadeSearchDlg::OnBnClickedButton10)
 ON_BN_CLICKED(IDC_BUTTON15, &CSaccadeSearchDlg::OnBnClickedButton15)
 ON_BN_CLICKED(IDC_BUTTON17, &CSaccadeSearchDlg::OnBnClickedButton17)
 ON_BN_CLICKED(IDC_BUTTON16, &CSaccadeSearchDlg::OnBnClickedButton16)
+ON_BN_CLICKED(IDC_BUTTON18, &CSaccadeSearchDlg::OnBnClickedButton18)
+//ON_BN_CLICKED(IDC_CHECK7, &CSaccadeSearchDlg::OnBnClickedCheck7)
 END_MESSAGE_MAP()
 
 
@@ -240,8 +247,7 @@ BOOL CSaccadeSearchDlg::OnInitDialog()
   SetDropDownHeight(&SearchMethod,3);
   SearchMethod.SetCurSel(0);
   OnCbnSelchangeCombo3();
-  SearchForCal.SetCheck(1);
-  CreateVirtualSaccades.SetCheck(1);
+
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -790,8 +796,6 @@ void CSaccadeSearchDlg::OnBnClickedButton9()
   MinTimeOffsetT.GetWindowTextA(tmp);
   MinTimeOffset=atof(tmp);
 
-  int MinTimeBeforeStimul=0;//must be defined later
-  int MaxTimeAfterStimul=1500;
 
   bool CreateVirtual=0;
   if(CreateVirtualSaccades.GetCheck())
@@ -937,12 +941,13 @@ void CSaccadeSearchDlg::OnBnClickedButton9()
             sac->StimulCode=Stimul;
             sac->TimeFromCal=0;
             sac->TimeFromStimul=0;
+            sac->StimulTime=x;
             bool SacFound=false;
 
             if(SearchForCal.GetCheck())
             {
               //find calibration stimul
-              while((n+step<Conan->NDataReal[rec]-1) && Conan->Discr[rec][n+step].Elder!=128)
+              while((n+step<Conan->NDataReal[rec]-1) && Conan->Discr[rec][n+step].Elder!=128)//80 in hex
                 step++;
 
               //detect saccade sign
@@ -961,8 +966,9 @@ void CSaccadeSearchDlg::OnBnClickedButton9()
                 }
               }
             }
-              LastCalStimulTime=Win->XToRealCoordsFromPoint(n+step);
-              //calibration stimul ok. search for saccade.
+            LastCalStimulTime=Win->XToRealCoordsFromPoint(n+step);
+            sac->CalStimulTime=LastCalStimulTime;
+            //calibration stimul ok. search for saccade.
             
             int sign=this->GetStimulSign(Stimul);
             if(sign==0)
@@ -1070,9 +1076,9 @@ void CSaccadeSearchDlg::OnBnClickedButton9()
   if(s!=0)
   {
     Win->CurSaccade=Conan->Saccades.size()-s;//the first from the new
-    Win->changed=1;
     FocusToSaccade();
     OutputSaccades();
+    Win->changed=1;
     Win->WinPaint();
     
     this->SacChanT.EnableWindow(1);
@@ -1088,8 +1094,8 @@ void CSaccadeSearchDlg::OnBnClickedButton9()
   }
   else
   {//no sacades, show it
-    Win->changed=1;
     OutputSaccades();
+    Win->changed=1;
     Win->WinPaint();
   }
 }
@@ -1215,6 +1221,22 @@ void CSaccadeSearchDlg::OnBnClickedButton13()
 
 void CSaccadeSearchDlg::OnBnClickedButton7()
 {
+  if(FirstLoad==true)
+  {
+    SearchForCal.SetCheck(1);
+    PreprocessAllRecords.SetCheck(1);
+    CreateVirtualSaccades.SetCheck(1);
+    MinYSpeedT.SetWindowTextA("1");
+    MinSpeedPointsT.SetWindowTextA("10");
+    MinYLengthT.SetWindowTextA("100");
+    MinXLengthT.SetWindowTextA("1");
+    MinTimeOffsetT.SetWindowTextA("0");
+    ApproxPrec.SetWindowTextA("1");
+    AprIterationsT.SetWindowTextA("5");
+    MinExtremPointsT.SetWindowTextA("10");
+    UseApproximation.SetCheck(1);
+    FirstLoad=false;
+  }
   //this->DoModal();
   CString path;
   CFileDialog dlg(TRUE/*Open=TRUE Save=False*/,"cad"/*Filename Extension*/,""/*Initial Filename*/,OFN_ENABLESIZING|OFN_EXPLORER|OFN_FILEMUSTEXIST/*Flags*/,"Conan File Format(*.cad)|*.cad||"/*Filetype Filter*/,this/*parent Window*/);
@@ -1290,6 +1312,9 @@ void CSaccadeSearchDlg::OnBnClickedButton7()
 
 
   
+  /*
+  
+  do NOT reset parameters
   MinYSpeedT.SetWindowTextA("1");
   MinSpeedPointsT.SetWindowTextA("10");
   MinYLengthT.SetWindowTextA("100");
@@ -1301,8 +1326,16 @@ void CSaccadeSearchDlg::OnBnClickedButton7()
   AprIterationsT.SetWindowTextA("5");
   MinExtremPointsT.SetWindowTextA("10");
 
-  UseApproximation.SetCheck(1);
-
+  UseApproximation.SetCheck(1);*/
+  
+  ApproxPrec.GetWindowTextA(tmp);
+  Conan->AproxCoef=atoi(tmp);
+  AprIterationsT.GetWindowTextA(tmp);
+  Conan->Iterations=atoi(tmp);
+  MinExtremPointsT.GetWindowTextA(tmp);
+  Conan->MinExtremumPoints=atoi(tmp);
+  Conan->Approximate=UseApproximation.GetCheck();
+  Approximate(Conan->CurChannel,Conan->CurRec);
   
   Conan->ResetSaccades();
   Win->CurSaccade=0;
@@ -1374,26 +1407,36 @@ void CSaccadeSearchDlg::OnBnClickedButton1()
     return;
 		
   path=dlg.GetPathName();
+  bool OhFileExists=FileExists(path);
   FILE * pFile;
-  fopen_s(&pFile, path, "w");
+  fopen_s(&pFile, path, "a+");
   CString header;
+
+  OpenedFile.GetWindowTextA(path);
+  path=path.Mid(1+path.ReverseFind('\\'));
   if(method==0 || method==1)
   {
-    header="Record Saccade_BeginX Saccade_BeginY Saccade_EndX Saccade_EndY Amplitude Stimul_Code Time_From_Calibration_Stimul Time_From_Last_Stimul";
-    fwrite(header,1,header.GetLength(),pFile);
-    fwrite("\n",1,1,pFile);
+    if(!OhFileExists)
+    {
+      header="File_Name Record Saccade_BeginX Saccade_BeginY Saccade_EndX Saccade_EndY Amplitude Stimul_Code Time_From_Calibration_Stimul Time_From_Last_Stimul";
+      fwrite(header,1,header.GetLength(),pFile);
+      fwrite("\n",1,1,pFile);
+    }
     for(unsigned int i=0;i<Conan->Saccades.size();i++)
     {
       s=Conan->Saccades.at(i);
-      fprintf(pFile,"%d %1.1f %1.4f %1.1f %1.4f %1.4f %x %1.1f %1.1f",s->rec+1,s->BeginX,s->BeginY,s->EndX,s->EndY,s->AmplitudeY(),s->StimulCode,s->TimeFromCal,s->TimeFromStimul);
+      fprintf(pFile,"%s %d %1.1f %1.4f %1.1f %1.4f %1.4f %x %1.1f %1.1f",path.GetBuffer(),s->rec+1,s->BeginX,s->BeginY,s->EndX,s->EndY,s->AmplitudeY(),s->StimulCode,s->TimeFromCal,s->TimeFromStimul);
      fwrite("\n",1,1,pFile);
     }
   }
   else if(method==2)//double saccade
   {
-    header="Record Time_Between_Stimuls Stimul_1_code Stimul_2_code 1_Saccade_Latent_Time 2_Saccade_Latent_Time";
-    fwrite(header,1,header.GetLength(),pFile);
-    fwrite("\n",1,1,pFile);
+    if(!OhFileExists)
+    {
+      header="File_Name Record Time_Between_Stimuls Stimul_1_code Stimul_2_code 1_Saccade_Latent_Time 2_Saccade_Latent_Time";
+      fwrite(header,1,header.GetLength(),pFile);
+      fwrite("\n",1,1,pFile);
+    }
     int SacNum=0;
     for(int RecNum=0;RecNum<Conan->Header->nRec;RecNum++)
     {
@@ -1404,7 +1447,7 @@ void CSaccadeSearchDlg::OnBnClickedButton1()
         SacNum++;
       }
       if(SacQ==0)
-        fprintf(pFile,"%d -",RecNum+1);
+        fprintf(pFile,"%s %d -",path.GetBuffer(),RecNum+1);
       else if(SacQ>2)//like fatal error
       {
         CString err;
@@ -1417,14 +1460,14 @@ void CSaccadeSearchDlg::OnBnClickedButton1()
       else if(SacQ==1)
       {
         s=Conan->Saccades.at(SacNum-1);
-        fprintf(pFile,"%d - %x - %1.0f -",s->rec+1,s->StimulCode,s->TimeFromCal);
+        fprintf(pFile,"%s %d - %x - %1.0f -",path.GetBuffer(),s->rec+1,s->StimulCode,s->TimeFromCal);
       }
       else if(SacQ==2)
       {
-        s=Conan->Saccades.at(SacNum-1);
-        s2=Conan->Saccades.at(SacNum-2);
-        float TimeBetweenStimul=abs(s->BeginX-s->TimeFromCal-(s2->BeginX-s2->TimeFromCal));
-        fprintf(pFile,"%d %1.0f %x %x %1.0f %1.0f",s->rec+1,TimeBetweenStimul,s->StimulCode,s2->StimulCode,s->TimeFromCal,s2->TimeFromCal);
+        s=Conan->Saccades.at(SacNum-2);
+        s2=Conan->Saccades.at(SacNum-1);
+        float TimeBetweenStimul=abs(s->BeginX-s->TimeFromStimul-(s2->BeginX-s2->TimeFromStimul));
+        fprintf(pFile,"%s %d %1.0f %x %x %1.0f %1.0f",path.GetBuffer(), s->rec+1,TimeBetweenStimul,s->StimulCode,s2->StimulCode,s->TimeFromCal,s2->TimeFromCal);
       }
       fwrite("\n",1,1,pFile);
     }
@@ -1485,6 +1528,8 @@ void CSaccadeSearchDlg::OnBnClickedButton6()
 
 void CSaccadeSearchDlg::OnEnChangeEdit26()
 {
+  if(Conan==NULL)
+    return;
   CString tmp;
   ApproxPrec.GetWindowTextA(tmp);
   Conan->AproxCoef=atoi(tmp);
@@ -1575,6 +1620,8 @@ void CSaccadeSearchDlg::Approximate(int chan, int rec)
 }
 void CSaccadeSearchDlg::OnEnChangeEdit27()
 {
+  if(Conan==NULL)
+    return;
   CString tmp;
   AprIterationsT.GetWindowTextA(tmp);
   Conan->Iterations=atoi(tmp);
@@ -1583,6 +1630,8 @@ void CSaccadeSearchDlg::OnEnChangeEdit27()
 
 void CSaccadeSearchDlg::OnEnChangeEdit28()
 {
+  if(Conan==NULL)
+    return;
   CString tmp;
   MinExtremPointsT.GetWindowTextA(tmp);
   Conan->MinExtremumPoints=atoi(tmp);
@@ -1691,21 +1740,36 @@ void CSaccadeSearchDlg::OnEnChangeEdit18()
   sac->TimeFromStimul=0;
   bool CalFound=0;
   bool StimFound=0;
-  while(n>=0 && (!CalFound || !StimFound))
+  //find stimul
+  while(n>=0 )
   {
     stim=Conan->Discr[sac->rec][n].Elder;
-    if(!CalFound && stim==128)//80 in hex
-    {
-      sac->TimeFromCal=x-Win->XToRealCoordsFromPoint(n);
-      CalFound=1;
-    }
-    else if(!StimFound && stim==sac->StimulCode)
+    if(stim==sac->StimulCode)
     {
       sac->TimeFromStimul=x-Win->XToRealCoordsFromPoint(n);
+      sac->StimulTime=Win->XToRealCoordsFromPoint(n);
       StimFound=1;
+      break;
     }
     n--;
   }
+
+  if(StimFound)
+  {
+    //find calibration stimul
+    while(n<Conan->NDataReal[sac->rec])
+    {
+      stim=Conan->Discr[sac->rec][n].Elder;
+      if(stim==128)//80 in hex
+      {
+        sac->TimeFromCal=x-Win->XToRealCoordsFromPoint(n);
+        CalFound=1;
+        break;
+      }
+      n++;
+    }
+  }
+  //all found
   tmp.Format("%1.0f",sac->TimeFromCal);
   SacTimeFromCalT.SetWindowTextA(tmp);
 
@@ -2066,6 +2130,29 @@ void CSaccadeSearchDlg::OnBnClickedButton16()
   OnBnClickedCheck2();//grid
   OnBnClickedCheck3();//point vals
   OnBnClickedCheck5();
+
+  OnEnChangeEdit29();//update negative and positive stimuls
+  OnEnChangeEdit15();
+
+  OnBnClickedCheck5();//approximation
+  OnEnChangeEdit26();
+  OnEnChangeEdit27();
+  OnEnChangeEdit28();
+
   Win->changed=1;
   Win->unhold();
+}
+
+void CSaccadeSearchDlg::OnBnClickedButton18()
+{
+  if(Conan->Saccades.size()==0)//nothing to virtualize
+    return;
+  Saccade* s=Conan->Saccades.at(Win->CurSaccade);
+  s->BeginX-=s->TimeFromStimul;//begin right after stimul
+  s->EndY=s->BeginY;
+  s->TimeFromCal=0;
+  s->TimeFromStimul=0;
+  s->EndX=s->BeginX+MaxTimeAfterStimul;
+  OutputSaccades();
+  FocusToSaccade();
 }

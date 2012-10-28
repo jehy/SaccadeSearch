@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Conandata.h"
-
+#include <sys/stat.h> 
 using namespace std;
 
 void AddLog(CEdit*log,CString z)
@@ -193,4 +193,29 @@ ConanData* ReadConanFile(char* fname,CEdit* log)
   all->Discr=Discr;
 
   return all;
+}
+
+
+bool FileExists(CString strFilename) {
+  struct stat stFileInfo;
+  bool blnReturn;
+  int intStat;
+
+  // Attempt to get the file attributes
+  intStat = stat(strFilename,&stFileInfo);
+  if(intStat == 0) {
+    // We were able to get the file attributes
+    // so the file obviously exists.
+    blnReturn = true;
+  } else {
+    // We were not able to get the file attributes.
+    // This may mean that we don't have permission to
+    // access the folder which contains this file. If you
+    // need to do that level of checking, lookup the
+    // return values of stat which will give you
+    // more details on why stat failed.
+    blnReturn = false;
+  }
+  
+  return(blnReturn);
 }

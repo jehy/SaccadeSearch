@@ -119,7 +119,7 @@ BEGIN
     PUSHBUTTON      "<",IDC_BUTTON8,129,33,13,12
     PUSHBUTTON      ">",IDC_BUTTON11,145,33,12,12
     CONTROL         "Clear other results",IDC_CHECK4,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,370,115,75,10
-    PUSHBUTTON      "Save",IDC_BUTTON12,235,98,107,14
+    PUSHBUTTON      "Save",IDC_BUTTON12,235,98,49,14
     GROUPBOX        "Global Actions",IDC_STATIC,0,2,65,83
     PUSHBUTTON      "Add new",IDC_BUTTON13,236,81,49,14
     PUSHBUTTON      "Delete",IDC_BUTTON14,293,81,50,14
@@ -146,6 +146,7 @@ BEGIN
     PUSHBUTTON      "Save Options",IDC_BUTTON17,3,64,57,14
     LTEXT           "Working with file",IDC_STATIC,70,10,54,8
     EDITTEXT        IDC_EDIT31,129,9,221,14,ES_AUTOHSCROLL | ES_READONLY
+    PUSHBUTTON      "Make virtual",IDC_BUTTON18,293,98,50,14
 END
 
 
@@ -155,8 +156,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION 5,2,0,0
+ PRODUCTVERSION 5,2,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -173,12 +174,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Jehy"
             VALUE "FileDescription", "http://jehy.ru"
-            VALUE "FileVersion", "1.0.0.1"
+            VALUE "FileVersion", "5, 2, 0, 0"
             VALUE "InternalName", "SaccadeSearch.exe"
-            VALUE "LegalCopyright", " (c)Jehy.  All rights reserved."
+            VALUE "LegalCopyright", " (c) Jehy.  All rights reserved."
             VALUE "OriginalFilename", "SaccadeSearch.exe"
             VALUE "ProductName", "Jehy"
-            VALUE "ProductVersion", "1.0.0.1"
+            VALUE "ProductVersion", "5, 2, 0, 0"
         END
     END
     BLOCK "VarFileInfo"
