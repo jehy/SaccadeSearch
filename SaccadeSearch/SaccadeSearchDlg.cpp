@@ -99,55 +99,56 @@ CSaccadeSearchDlg::~CSaccadeSearchDlg()
 
 void CSaccadeSearchDlg::DoDataExchange(CDataExchange* pDX)
 {
-  CDialog::DoDataExchange(pDX);
-  DDX_Control(pDX, IDC_EDIT1, log);
-  //DDX_Control(pDX, IDC_BUTTON1, LoadBtn);
-  DDX_Control(pDX, IDC_EDIT2, xscale);
-  DDX_Control(pDX, IDC_EDIT3, yscale);
-  DDX_Control(pDX, IDC_COMBO1, chan);
-  DDX_Control(pDX, IDC_EDIT4, xfreq);
-  DDX_Control(pDX, IDC_EDIT5, xoffset);
-  DDX_Control(pDX, IDC_EDIT6, yoffset);
-  DDX_Control(pDX, IDC_COMBO2, rec);
-  DDX_Control(pDX, IDC_CHECK1, AutoDefineYOffset);
-  DDX_Control(pDX, IDC_CHECK2, GridEnabled);
-  DDX_Control(pDX, IDC_CHECK3, showpoints);
+	CDialog::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_EDIT1, log);
+	//DDX_Control(pDX, IDC_BUTTON1, LoadBtn);
+	DDX_Control(pDX, IDC_EDIT2, xscale);
+	DDX_Control(pDX, IDC_EDIT3, yscale);
+	DDX_Control(pDX, IDC_COMBO1, chan);
+	DDX_Control(pDX, IDC_EDIT4, xfreq);
+	DDX_Control(pDX, IDC_EDIT5, xoffset);
+	DDX_Control(pDX, IDC_EDIT6, yoffset);
+	DDX_Control(pDX, IDC_COMBO2, rec);
+	DDX_Control(pDX, IDC_CHECK1, AutoDefineYOffset);
+	DDX_Control(pDX, IDC_CHECK2, GridEnabled);
+	DDX_Control(pDX, IDC_CHECK3, showpoints);
 
 
-  DDX_Control(pDX, IDC_RADIO2, mouse_move);
-  DDX_Control(pDX, IDC_RADIO1, mouse_zoom);
-  DDX_Control(pDX, IDC_RADIO3, mouse_ruler);
-  DDX_Control(pDX, IDC_EDIT8, rulerx);
-  DDX_Control(pDX, IDC_EDIT9, rulery);
-  DDX_Control(pDX, IDC_EDIT10, MinYSpeedT);
-  DDX_Control(pDX, IDC_EDIT11, MinSpeedPointsT);
-  DDX_Control(pDX, IDC_EDIT12, MinYLengthT);
-  DDX_Control(pDX, IDC_EDIT13, MinXLengthT);
-  DDX_Control(pDX, IDC_EDIT14, MinTimeOffsetT);
-  DDX_Control(pDX, IDC_EDIT15, NegativeStimulCodesT);
-  DDX_Control(pDX, IDC_CHECK4, ClearOther);
-  DDX_Control(pDX, IDC_EDIT7, CurSaccadeT);
-  DDX_Control(pDX, IDC_EDIT16, SacChanT);
-  DDX_Control(pDX, IDC_EDIT17, SacRecT);
-  DDX_Control(pDX, IDC_EDIT18, SacXBeginT);
-  DDX_Control(pDX, IDC_EDIT19, SacYBeginT);
-  DDX_Control(pDX, IDC_EDIT20, SacXEndT);
-  DDX_Control(pDX, IDC_EDIT21, SacYEndT);
-  DDX_Control(pDX, IDC_EDIT22, SacAmplitudeT);
-  DDX_Control(pDX, IDC_EDIT23, SacStimulCodeT);
-  DDX_Control(pDX, IDC_EDIT24, SacTimeFromCalT);
-  DDX_Control(pDX, IDC_EDIT25, SacTimeFromStimulT);
-  DDX_Control(pDX, IDC_EDIT26, ApproxPrec);
-  DDX_Control(pDX, IDC_EDIT27, AprIterationsT);
-  DDX_Control(pDX, IDC_EDIT28, MinExtremPointsT);
-  DDX_Control(pDX, IDC_CHECK5, UseApproximation);
-  DDX_Control(pDX, IDC_CHECK6, PreprocessAllRecords);
-  DDX_Control(pDX, IDC_COMBO3, SearchMethod);
-  DDX_Control(pDX, IDC_EDIT29, PositiveStimulCodesT);
-  DDX_Control(pDX, IDC_CHECK7, CreateVirtualSaccades);
-  DDX_Control(pDX, IDC_EDIT30, AllSaccades);
-  DDX_Control(pDX, IDC_CHECK8, SearchForCal);
-  DDX_Control(pDX, IDC_EDIT31, OpenedFile);
+	DDX_Control(pDX, IDC_RADIO2, mouse_move);
+	DDX_Control(pDX, IDC_RADIO1, mouse_zoom);
+	DDX_Control(pDX, IDC_RADIO3, mouse_ruler);
+	DDX_Control(pDX, IDC_EDIT8, rulerx);
+	DDX_Control(pDX, IDC_EDIT9, rulery);
+	DDX_Control(pDX, IDC_EDIT10, MinYSpeedT);
+	DDX_Control(pDX, IDC_EDIT11, MinSpeedPointsT);
+	DDX_Control(pDX, IDC_EDIT12, MinYLengthT);
+	DDX_Control(pDX, IDC_EDIT13, MinXLengthT);
+	DDX_Control(pDX, IDC_EDIT14, MinTimeOffsetT);
+	DDX_Control(pDX, IDC_EDIT15, NegativeStimulCodesT);
+	DDX_Control(pDX, IDC_CHECK4, ClearOther);
+	DDX_Control(pDX, IDC_EDIT7, CurSaccadeT);
+	DDX_Control(pDX, IDC_EDIT16, SacChanT);
+	DDX_Control(pDX, IDC_EDIT17, SacRecT);
+	DDX_Control(pDX, IDC_EDIT18, SacXBeginT);
+	DDX_Control(pDX, IDC_EDIT19, SacYBeginT);
+	DDX_Control(pDX, IDC_EDIT20, SacXEndT);
+	DDX_Control(pDX, IDC_EDIT21, SacYEndT);
+	DDX_Control(pDX, IDC_EDIT22, SacAmplitudeT);
+	DDX_Control(pDX, IDC_EDIT23, SacStimulCodeT);
+	DDX_Control(pDX, IDC_EDIT24, SacTimeFromCalT);
+	DDX_Control(pDX, IDC_EDIT25, SacTimeFromStimulT);
+	DDX_Control(pDX, IDC_EDIT26, ApproxPrec);
+	DDX_Control(pDX, IDC_EDIT27, AprIterationsT);
+	DDX_Control(pDX, IDC_EDIT28, MinExtremPointsT);
+	DDX_Control(pDX, IDC_CHECK5, UseApproximation);
+	DDX_Control(pDX, IDC_CHECK6, PreprocessAllRecords);
+	DDX_Control(pDX, IDC_COMBO3, SearchMethod);
+	DDX_Control(pDX, IDC_EDIT29, PositiveStimulCodesT);
+	DDX_Control(pDX, IDC_CHECK7, CreateVirtualSaccades);
+	DDX_Control(pDX, IDC_EDIT30, AllSaccades);
+	DDX_Control(pDX, IDC_CHECK8, SearchForCal);
+	DDX_Control(pDX, IDC_EDIT31, OpenedFile);
+	DDX_Control(pDX, IDC_EDIT32, Notice);
 }
 
 BEGIN_MESSAGE_MAP(CSaccadeSearchDlg, CDialog)
@@ -694,6 +695,7 @@ void CSaccadeSearchDlg::OutputSaccades()
   this->SacStimulCodeT.SetWindowTextA("");
   this->SacTimeFromCalT.SetWindowTextA("");
   this->SacTimeFromStimulT.SetWindowTextA("");
+  this->Notice.SetWindowTextA("");
     return;
   }
   Saccade* s=Conan->Saccades.at(Win->CurSaccade);
@@ -709,6 +711,8 @@ void CSaccadeSearchDlg::OutputSaccades()
   this->SacXEndT.SetWindowTextA(tmp);
   tmp.Format("%1.4f",s->EndY);
   this->SacYEndT.SetWindowTextA(tmp);
+
+  this->SacYEndT.SetWindowTextA(s->Notice);
 
 
   tmp.Format("%1.4f",s->AmplitudeY());
@@ -1165,6 +1169,7 @@ void CSaccadeSearchDlg::OnBnClickedButton12()
   }
   CString tmp;
   Saccade* s=Conan->Saccades.at(Win->CurSaccade);
+  this->Notice.GetWindowTextA(s->Notice);
   this->SacChanT.GetWindowTextA(tmp);
   s->chan=atoi(tmp)-1;
   if(s->chan<0)
@@ -1418,14 +1423,14 @@ void CSaccadeSearchDlg::OnBnClickedButton1()
   {
     if(!OhFileExists)
     {
-      header="File_Name Record Saccade_BeginX Saccade_BeginY Saccade_EndX Saccade_EndY Amplitude Stimul_Code Time_From_Calibration_Stimul Time_From_Last_Stimul";
+      header="File_Name Record Saccade_BeginX Saccade_BeginY Saccade_EndX Saccade_EndY Amplitude Stimul_Code Time_From_Calibration_Stimul Time_From_Last_Stimul Notice";
       fwrite(header,1,header.GetLength(),pFile);
       fwrite("\n",1,1,pFile);
     }
     for(unsigned int i=0;i<Conan->Saccades.size();i++)
     {
       s=Conan->Saccades.at(i);
-      fprintf(pFile,"%s %d %1.1f %1.4f %1.1f %1.4f %1.4f %x %1.1f %1.1f",path.GetBuffer(),s->rec+1,s->BeginX,s->BeginY,s->EndX,s->EndY,s->AmplitudeY(),s->StimulCode,s->TimeFromCal,s->TimeFromStimul);
+	  fprintf(pFile,"%s %d %1.1f %1.4f %1.1f %1.4f %1.4f %x %1.1f %1.1f %s",path.GetBuffer(),s->rec+1,s->BeginX,s->BeginY,s->EndX,s->EndY,s->AmplitudeY(),s->StimulCode,s->TimeFromCal,s->TimeFromStimul,s->Notice.GetBuffer());
      fwrite("\n",1,1,pFile);
     }
   }
@@ -1433,7 +1438,7 @@ void CSaccadeSearchDlg::OnBnClickedButton1()
   {
     if(!OhFileExists)
     {
-      header="File_Name Record Time_Between_Stimuls Stimul_1_code Stimul_2_code 1_Saccade_Latent_Time 2_Saccade_Latent_Time 1_Amplitude 2_Amplitude";
+      header="File_Name Record Time_Between_Stimuls Stimul_1_code Stimul_2_code 1_Saccade_Latent_Time 2_Saccade_Latent_Time 1_Amplitude 2_Amplitude 1_Notice 2_Notice";
       fwrite(header,1,header.GetLength(),pFile);
       fwrite("\n",1,1,pFile);
     }
@@ -1460,14 +1465,14 @@ void CSaccadeSearchDlg::OnBnClickedButton1()
       else if(SacQ==1)
       {
         s=Conan->Saccades.at(SacNum-1);
-		fprintf(pFile,"%s %d - %x - %1.0f - %1.4f -",path.GetBuffer(),s->rec+1,s->StimulCode,s->TimeFromCal,s->AmplitudeY());
+		fprintf(pFile,"%s %d - %x - %1.0f - %1.4f - %s",path.GetBuffer(),s->rec+1,s->StimulCode,s->TimeFromCal,s->AmplitudeY(),s->Notice.GetBuffer());
       }
       else if(SacQ==2)
       {
         s=Conan->Saccades.at(SacNum-2);
         s2=Conan->Saccades.at(SacNum-1);
         float TimeBetweenStimul=abs(s->BeginX-s->TimeFromStimul-(s2->BeginX-s2->TimeFromStimul));
-        fprintf(pFile,"%s %d %1.0f %x %x %1.0f %1.0f %1.4f %1.4f",path.GetBuffer(), s->rec+1,TimeBetweenStimul,s->StimulCode,s2->StimulCode,s->TimeFromCal,s2->TimeFromCal,s->AmplitudeY(),s2->AmplitudeY());
+        fprintf(pFile,"%s %d %1.0f %x %x %1.0f %1.0f %1.4f %1.4f %s %s",path.GetBuffer(), s->rec+1,TimeBetweenStimul,s->StimulCode,s2->StimulCode,s->TimeFromCal,s2->TimeFromCal,s->AmplitudeY(),s2->AmplitudeY(),s->Notice.GetBuffer(),s2->Notice.GetBuffer());
       }
       fwrite("\n",1,1,pFile);
     }

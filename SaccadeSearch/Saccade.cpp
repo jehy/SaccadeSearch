@@ -16,6 +16,7 @@ Saccade::Saccade(void)
   Points=0;
   chan=0;
   rec=0;
+  Notice="";
 }
 
 Saccade::~Saccade(void)

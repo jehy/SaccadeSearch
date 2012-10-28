@@ -7,7 +7,7 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "afxres.h" 
+#include "afxres.h" /
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
@@ -43,7 +43,7 @@ BEGIN
     PUSHBUTTON      "OK",IDOK,251,185,50,16,NOT WS_VISIBLE | NOT WS_TABSTOP
     PUSHBUTTON      "Cancel",IDCANCEL,307,185,50,16,NOT WS_VISIBLE | NOT WS_TABSTOP
     EDITTEXT        IDC_EDIT1,143,201,109,112,ES_MULTILINE | ES_AUTOHSCROLL | NOT WS_VISIBLE | WS_VSCROLL | NOT WS_TABSTOP
-    COMBOBOX        IDC_COMBO1,7,100,48,30,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO1,7,100,48,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Channel",IDC_STATIC,9,89,27,8
     LTEXT           "X scale",IDC_STATIC,7,138,23,8
     LTEXT           "Y scale",IDC_STATIC,7,168,23,8
@@ -56,7 +56,7 @@ BEGIN
     LTEXT           "X offset",IDC_STATIC,7,195,26,8
     LTEXT           "Y offset",IDC_STATIC,7,223,26,8
     LTEXT           "Record",IDC_STATIC,7,113,24,8
-    COMBOBOX        IDC_COMBO2,7,124,48,30,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO2,7,124,48,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "AutoDefine Y offset",IDC_STATIC,7,251,64,8
     CONTROL         "",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,260,16,10
     PUSHBUTTON      "left",IDC_BUTTON2,5,274,19,15
@@ -71,7 +71,7 @@ BEGIN
     LTEXT           "X end",IDC_STATIC,151,51,19,8
     LTEXT           "Y end",IDC_STATIC,151,67,19,8
     LTEXT           "Amplitude",IDC_STATIC,151,81,32,8
-    COMBOBOX        IDC_COMBO3,416,90,62,30,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO3,416,90,62,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Search method",IDC_STATIC,366,91,49,8
     PUSHBUTTON      "Save Saccades",IDC_BUTTON1,3,29,58,14
     PUSHBUTTON      "Load",IDC_BUTTON6,271,220,78,14,NOT WS_VISIBLE
@@ -146,7 +146,7 @@ BEGIN
     EDITTEXT        IDC_EDIT31,129,9,221,14,ES_AUTOHSCROLL | ES_READONLY
     PUSHBUTTON      "Make virtual",IDC_BUTTON18,293,98,50,14
     LTEXT           "Notice",IDC_STATIC,79,120,21,8
-    EDITTEXT        IDC_EDIT32,105,118,237,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT32,105,118,237,14,ES_AUTOHSCROLL
 END
 
 
@@ -156,8 +156,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 5,3,0,0
- PRODUCTVERSION 5,3,0,0
+ FILEVERSION 5,4,0,0
+ PRODUCTVERSION 5,4,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -174,12 +174,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Jehy"
             VALUE "FileDescription", "http://jehy.ru"
-            VALUE "FileVersion", "5.3.0.0"
+            VALUE "FileVersion", "5.4.0.0"
             VALUE "InternalName", "SaccadeSearch.exe"
             VALUE "LegalCopyright", " (c) Jehy.  All rights reserved."
             VALUE "OriginalFilename", "SaccadeSearch.exe"
             VALUE "ProductName", "Jehy"
-            VALUE "ProductVersion", "5.3.0.0"
+            VALUE "ProductVersion", "5.4.0.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -299,8 +299,7 @@ LANGUAGE 25, 1
 #pragma code_page(1251)
 #include "res\saccadesearch.rc2"  // non-Microsoft Visual C++ edited resources
 #include "afxres.rc"     // Standard components
-#endif
-
+#endif
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 

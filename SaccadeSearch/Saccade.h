@@ -18,6 +18,7 @@ public:
   float StimulTime;
   int chan;
   int rec;
+  CString Notice;
 public:
   float AmplitudeX();
   float AmplitudeY();

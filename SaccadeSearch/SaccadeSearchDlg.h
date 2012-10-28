@@ -152,4 +152,5 @@ public:
   CEdit OpenedFile;
   afx_msg void OnBnClickedButton18();
 //  afx_msg void OnBnClickedCheck7();
+  CEdit Notice;
 };
