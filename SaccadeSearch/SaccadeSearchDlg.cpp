@@ -723,6 +723,7 @@ void CSaccadeSearchDlg::OutputSaccades()
   this->SacTimeFromCalT.SetWindowTextA(tmp);
   tmp.Format("%1.0f",s->TimeFromStimul);
   this->SacTimeFromStimulT.SetWindowTextA(tmp);
+  this->Notice.SetWindowTextA(s->Notice);
 
   Win->hold();
   Conan->CurChannel=s->chan;
