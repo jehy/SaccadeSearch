@@ -142,6 +142,7 @@ void CSaccadeSearchDlg::DoDataExchange(CDataExchange* pDX)
   DDX_Control(pDX, IDC_CHECK7, CreateVirtualSaccades);
   DDX_Control(pDX, IDC_EDIT30, AllSaccades);
   DDX_Control(pDX, IDC_CHECK8, SearchForCal);
+  DDX_Control(pDX, IDC_EDIT31, OpenedFile);
 }
 
 BEGIN_MESSAGE_MAP(CSaccadeSearchDlg, CDialog)
@@ -1220,11 +1221,15 @@ void CSaccadeSearchDlg::OnBnClickedButton7()
 	int z=dlg.DoModal();
   if (z == IDOK)
 		path=dlg.GetPathName();
-  else
-    this->OnCancel();//exit program
-  if(z!=IDOK)
+  else if (Conan!=NULL)//smth already loaded
     return;
+  else
+  {
+    this->OnCancel();//exit program if nothing in data
+    return;
+  }
 
+  OpenedFile.SetWindowTextA(path);
   if(Conan!=NULL)
     delete(Conan);
   Conan=ReadConanFile(path.GetBuffer(),&log);
@@ -1361,33 +1366,70 @@ void CSaccadeSearchDlg::OnBnClickedButton1()
   CString save,tmp;
   int method=SearchMethod.GetCurSel();
   Saccade* s;
+  Saccade* s2;
   CString path;
-  CFileDialog dlg(FALSE/*Open=TRUE Save=False*/,"sac"/*Filename Extension*/,""/*Initial Filename*/,OFN_ENABLESIZING|OFN_EXPLORER/*Flags*/,"Saccade file(*.sac)|*.sac||"/*Filetype Filter*/,this/*parent Window*/);
+  CFileDialog dlg(FALSE/*Open=TRUE Save=False*/,"txt"/*Filename Extension*/,""/*Initial Filename*/,OFN_ENABLESIZING|OFN_EXPLORER/*Flags*/,"Saccade file(*.txt)|*.txt||"/*Filetype Filter*/,this/*parent Window*/);
 	int z=dlg.DoModal();
-  if (z == IDOK)
+  if (z!= IDOK)
+    return;
+		
+  path=dlg.GetPathName();
+  FILE * pFile;
+  fopen_s(&pFile, path, "w");
+  CString header;
+  if(method==0 || method==1)
   {
-		path=dlg.GetPathName();
-    FILE * pFile;
-    fopen_s(&pFile, path, "w");
-  for(unsigned int i=0;i<Conan->Saccades.size();i++)
-  {
-    s=Conan->Saccades.at(i);
-    fprintf(pFile,"%d %d %1.1f %1.4f %1.1f %1.4f %1.4f %x %1.1f %1.1f",s->chan+1,s->rec+1,s->BeginX,s->BeginY,s->EndX,s->EndY,s->AmplitudeY(),s->StimulCode,s->TimeFromCal,s->TimeFromStimul);
-    if(method==0 || method==1)
-      fwrite("\n",1,1,pFile);
-    else if(method==2)//double saccade
+    header="Record Saccade_BeginX Saccade_BeginY Saccade_EndX Saccade_EndY Amplitude Stimul_Code Time_From_Calibration_Stimul Time_From_Last_Stimul";
+    fwrite(header,1,header.GetLength(),pFile);
+    fwrite("\n",1,1,pFile);
+    for(unsigned int i=0;i<Conan->Saccades.size();i++)
     {
-      if(Conan->Saccades.size()>i+1)
-      {
-        i++;
-        s=Conan->Saccades.at(i);
-        fprintf(pFile,"%1.1f %1.4f %1.1f %1.4f %1.4f %x %1.1f %1.1f",s->BeginX,s->BeginY,s->EndX,s->EndY,s->AmplitudeY(),s->StimulCode,s->TimeFromCal,s->TimeFromStimul);
-      }
+      s=Conan->Saccades.at(i);
+      fprintf(pFile,"%d %1.1f %1.4f %1.1f %1.4f %1.4f %x %1.1f %1.1f",s->rec+1,s->BeginX,s->BeginY,s->EndX,s->EndY,s->AmplitudeY(),s->StimulCode,s->TimeFromCal,s->TimeFromStimul);
+     fwrite("\n",1,1,pFile);
     }
   }
-    //fwrite(save,1,save.GetLength(),pFile);
-    fclose(pFile);
+  else if(method==2)//double saccade
+  {
+    header="Record Time_Between_Stimuls Stimul_1_code Stimul_2_code 1_Saccade_Latent_Time 2_Saccade_Latent_Time";
+    fwrite(header,1,header.GetLength(),pFile);
+    fwrite("\n",1,1,pFile);
+    int SacNum=0;
+    for(int RecNum=0;RecNum<Conan->Header->nRec;RecNum++)
+    {
+      int SacQ=0;
+      while(Conan->Saccades.size()>SacNum && Conan->Saccades.at(SacNum)->rec==RecNum)
+      {
+        SacQ++;
+        SacNum++;
+      }
+      if(SacQ==0)
+        fprintf(pFile,"%d -",RecNum+1);
+      else if(SacQ>2)//like fatal error
+      {
+        CString err;
+        err.Format("In record # %d, %d saccades found. Please, correct it and try to save again. Aborting...",RecNum+1,SacQ);
+        fwrite(err,1,err.GetLength(),pFile);
+        fclose(pFile);
+        MessageBox(err,"Error",MB_OK);
+        return;
+      }
+      else if(SacQ==1)
+      {
+        s=Conan->Saccades.at(SacNum-1);
+        fprintf(pFile,"%d - %x - %1.0f -",s->rec+1,s->StimulCode,s->TimeFromCal);
+      }
+      else if(SacQ==2)
+      {
+        s=Conan->Saccades.at(SacNum-1);
+        s2=Conan->Saccades.at(SacNum-2);
+        float TimeBetweenStimul=abs(s->BeginX-s->TimeFromCal-(s2->BeginX-s2->TimeFromCal));
+        fprintf(pFile,"%d %1.0f %x %x %1.0f %1.0f",s->rec+1,TimeBetweenStimul,s->StimulCode,s2->StimulCode,s->TimeFromCal,s2->TimeFromCal);
+      }
+      fwrite("\n",1,1,pFile);
+    }
   }
+  fclose(pFile);
 }
 
 void CSaccadeSearchDlg::OnBnClickedButton6()
@@ -1917,17 +1959,18 @@ void CSaccadeSearchDlg::OnBnClickedButton16()
 
   p2=data.Find(" ",p);
   tmp=data.Mid(p,p2-p);
-  mouse_move.SetCheck(atoi(tmp));
+  if(atoi(tmp))
+    OnBnClickedRadio2();
   p=p2+1;
 
   p2=data.Find(" ",p);
-  tmp=data.Mid(p,p2-p);
-  mouse_zoom.SetCheck(atoi(tmp));
+  if(atoi(tmp))
+    OnBnClickedRadio1();
   p=p2+1;
 
   p2=data.Find(" ",p);
-  tmp=data.Mid(p,p2-p);
-  mouse_ruler.SetCheck(atoi(tmp));
+  if(atoi(tmp))
+    OnBnClickedRadio3();
   p=p2+1;
 
   p2=data.Find(" ",p);
