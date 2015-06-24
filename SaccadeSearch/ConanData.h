@@ -17,7 +17,7 @@ struct ConanHeader
 	unsigned __int16 nRec;//      Number of records
 	unsigned __int16 nilCalibr[32];
 	unsigned __int16 maxCalibr[32]; 
-  unsigned __int8 coord[32][4];
+    unsigned __int8 coord[32][4];
 	unsigned __int16 sens[32]; 
 };
 

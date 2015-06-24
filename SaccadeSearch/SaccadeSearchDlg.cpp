@@ -8,6 +8,7 @@
 #include "Conandata.h"
 #include "Eegraph.h"
 #include "Saccade.h"
+#include "windows.h"
 #include <vector>
 
 
@@ -1410,6 +1411,7 @@ void CSaccadeSearchDlg::OnBnClickedButton14()
 
 void CSaccadeSearchDlg::OnBnClickedButton1()
 {
+	USES_CONVERSION;
   CString save,tmp;
   int method=SearchMethod.GetCurSel();
   Saccade* s;
@@ -1423,7 +1425,7 @@ void CSaccadeSearchDlg::OnBnClickedButton1()
   path=dlg.GetPathName();
   bool OhFileExists=FileExists(path);
   FILE * pFile;
-  _wfopen_s(&pFile, path, _T("a+"));
+  fopen_s(&pFile, W2A(path.GetBuffer()), "a+");
   CString header;
 
   OpenedFile.GetWindowText(path);
@@ -1433,13 +1435,13 @@ void CSaccadeSearchDlg::OnBnClickedButton1()
     if(!OhFileExists)
     {
       header="File_Name Record Saccade_BeginX Saccade_BeginY Saccade_EndX Saccade_EndY Amplitude Stimul_Code Time_From_Calibration_Stimul Time_From_Last_Stimul Notice";
-      fwrite(header,1,header.GetLength(),pFile);
+      fwrite(W2A(header.GetBuffer()),1,header.GetLength(),pFile);
       fwrite("\n",1,1,pFile);
     }
     for(unsigned int i=0;i<Conan->Saccades.size();i++)
     {
       s=Conan->Saccades.at(i);
-	  fprintf(pFile,"%s %d %1.1f %1.4f %1.1f %1.4f %1.4f %x %1.1f %1.1f %s",path.GetBuffer(),s->rec+1,s->BeginX,s->BeginY,s->EndX,s->EndY,s->AmplitudeY(),s->StimulCode,s->TimeFromCal,s->TimeFromStimul,s->Notice.GetBuffer());
+	  fprintf(pFile, "%s %d %1.1f %1.4f %1.1f %1.4f %1.4f %x %1.1f %1.1f %s", W2A(path.GetBuffer()), s->rec + 1, s->BeginX, s->BeginY, s->EndX, s->EndY, s->AmplitudeY(), s->StimulCode, s->TimeFromCal, s->TimeFromStimul, W2A(s->Notice.GetBuffer()));
      fwrite("\n",1,1,pFile);
     }
   }
@@ -1448,7 +1450,7 @@ void CSaccadeSearchDlg::OnBnClickedButton1()
     if(!OhFileExists)
     {
       header="File_Name Record Time_Between_Stimuls Stimul_1_code Stimul_2_code 1_Saccade_Latent_Time 2_Saccade_Latent_Time 1_Amplitude 2_Amplitude 1_Notice 2_Notice";
-      fwrite(header,1,header.GetLength(),pFile);
+	  fwrite(W2A(header.GetBuffer()), 1, header.GetLength(), pFile);
       fwrite("\n",1,1,pFile);
     }
     int SacNum=0;
@@ -1461,12 +1463,12 @@ void CSaccadeSearchDlg::OnBnClickedButton1()
         SacNum++;
       }
       if(SacQ==0)
-        fprintf(pFile,"%s %d -",path.GetBuffer(),RecNum+1);
+		  fprintf(pFile, "%s %d -", W2A(path.GetBuffer()), RecNum + 1);
       else if(SacQ>2)//like fatal error
       {
         CString err;
 		err.Format(_T("In record # %d, %d saccades found. Please, correct it and try to save again. Aborting..."), RecNum + 1, SacQ);
-        fwrite(err,1,err.GetLength(),pFile);
+		fwrite(W2A(err.GetBuffer()), 1, err.GetLength(), pFile);
         fclose(pFile);
 		MessageBox(err, _T("Error"), MB_OK);
         return;
@@ -1474,14 +1476,14 @@ void CSaccadeSearchDlg::OnBnClickedButton1()
       else if(SacQ==1)
       {
         s=Conan->Saccades.at(SacNum-1);
-		fprintf(pFile,"%s %d - %x - %1.0f - %1.4f - %s",path.GetBuffer(),s->rec+1,s->StimulCode,s->TimeFromCal,s->AmplitudeY(),s->Notice.GetBuffer());
+		fprintf(pFile, "%s %d - %x - %1.0f - %1.4f - %s", W2A(path.GetBuffer()), s->rec + 1, s->StimulCode, s->TimeFromCal, s->AmplitudeY(), W2A(s->Notice.GetBuffer()));
       }
       else if(SacQ==2)
       {
         s=Conan->Saccades.at(SacNum-2);
         s2=Conan->Saccades.at(SacNum-1);
         float TimeBetweenStimul=abs(s->BeginX-s->TimeFromStimul-(s2->BeginX-s2->TimeFromStimul));
-        fprintf(pFile,"%s %d %1.0f %x %x %1.0f %1.0f %1.4f %1.4f %s %s",path.GetBuffer(), s->rec+1,TimeBetweenStimul,s->StimulCode,s2->StimulCode,s->TimeFromCal,s2->TimeFromCal,s->AmplitudeY(),s2->AmplitudeY(),s->Notice.GetBuffer(),s2->Notice.GetBuffer());
+		fprintf(pFile, "%s %d %1.0f %x %x %1.0f %1.0f %1.4f %1.4f %s %s", W2A(path.GetBuffer()), s->rec + 1, TimeBetweenStimul, s->StimulCode, s2->StimulCode, s->TimeFromCal, s2->TimeFromCal, s->AmplitudeY(), s2->AmplitudeY(), W2A(s->Notice.GetBuffer()), W2A(s2->Notice.GetBuffer()));
       }
       fwrite("\n",1,1,pFile);
     }
@@ -1950,13 +1952,15 @@ void CSaccadeSearchDlg::OnBnClickedButton17()
 		path=dlg.GetPathName();
     FILE * pFile;
 	_wfopen_s(&pFile, path, _T("w"));
-    fwrite(data,1,data.GetLength(),pFile);
+	USES_CONVERSION;
+	fwrite(W2A(data.GetBuffer()), sizeof(char), data.GetLength(), pFile);
     fclose(pFile);
   }
 }
 
 void CSaccadeSearchDlg::OnBnClickedButton16()
 {
+	USES_CONVERSION;
   CString path;
   CFileDialog dlg(TRUE/*Open=TRUE Save=False*/, _T("cfg")/*Filename Extension*/, _T("")/*Initial Filename*/, OFN_ENABLESIZING | OFN_EXPLORER | OFN_FILEMUSTEXIST/*Flags*/, _T("Config file(*.cfg)|*.cfg||")/*Filetype Filter*/, this/*parent Window*/);
 	int z=dlg.DoModal();
@@ -1968,18 +1972,18 @@ void CSaccadeSearchDlg::OnBnClickedButton16()
   Win->hold();
   FILE * pFile;
   long lSize;
-  TCHAR* buffer;
+  char* buffer;
   size_t result;
 
   _wfopen_s(&pFile, path, _T("r+t"));
   fseek (pFile , 0 , SEEK_END);
   lSize = ftell (pFile);
   rewind (pFile);
-  buffer = new TCHAR[lSize];
+  buffer = new char[lSize];
   result = fread (buffer,1,lSize,pFile);
   fclose(pFile);
   CString data;
-  data.Append(buffer);
+  data.Append(A2W(buffer));
   delete[] buffer;
   
   int p=0;
