@@ -242,9 +242,9 @@ BOOL CSaccadeSearchDlg::OnInitDialog()
 
 	//this->OnBnClickedButton7();//load data
 
-  SearchMethod.AddString("free search");
-  SearchMethod.AddString("Stimul based");
-  SearchMethod.AddString("2x Stimul based");
+	SearchMethod.AddString(_T("free search"));
+	SearchMethod.AddString(_T("Stimul based"));
+	SearchMethod.AddString(_T("2x Stimul based"));
   SetDropDownHeight(&SearchMethod,3);
   SearchMethod.SetCurSel(0);
   OnCbnSelchangeCombo3();
@@ -275,10 +275,10 @@ void CSaccadeSearchDlg::RecreateEeGraph()
 	RECT DRect;
 	RECT WRect;
 	RECT ORect;
-	GetClientRect(&DRect);			//Ïîëó÷èòü êîîðäèíàòû êëèåíòñêîé ÷àñòè äèàëîãà
-	//log.GetWindowRect(&ORect);	//Ïîëó÷èòü êîîðäèíàòû êíîïêè
-	ScreenToClient(&ORect);			//Ïðåîáðàçîâàòü êîîðäèíàòû êíîïêè èç ýêðàííûõ â êëèåíòñêèå
-	WRect.top=DRect.top+305;			//Çàäàòü êîîðäèíàòû îêíà
+	GetClientRect(&DRect);			//ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚Ñ‹ ÐºÐ»Ð¸ÐµÐ½Ñ‚ÑÐºÐ¾Ð¹ Ñ‡Ð°ÑÑ‚Ð¸ Ð´Ð¸Ð°Ð»Ð¾Ð³Ð°
+	//log.GetWindowRect(&ORect);	//ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚Ñ‹ ÐºÐ½Ð¾Ð¿ÐºÐ¸
+	ScreenToClient(&ORect);			//ÐŸÑ€ÐµÐ¾Ð±Ñ€Ð°Ð·Ð¾Ð²Ð°Ñ‚ÑŒ ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚Ñ‹ ÐºÐ½Ð¾Ð¿ÐºÐ¸ Ð¸Ð· ÑÐºÑ€Ð°Ð½Ð½Ñ‹Ñ… Ð² ÐºÐ»Ð¸ÐµÐ½Ñ‚ÑÐºÐ¸Ðµ
+	WRect.top=DRect.top+305;			//Ð—Ð°Ð´Ð°Ñ‚ÑŒ ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚Ñ‹ Ð¾ÐºÐ½Ð°
 	WRect.left=DRect.left+120;
   WRect.right =DRect.right-5;
 	WRect.bottom=DRect.bottom-5;
@@ -368,22 +368,22 @@ void CSaccadeSearchDlg::ChangeParam()
   CString tmp;
   float sc;
 
-  xscale.GetWindowTextA(tmp);
-  sc=atof(tmp.GetBuffer());
+  xscale.GetWindowText(tmp);
+  sc=_wtof(tmp.GetBuffer());
   if(sc!=0)
     Conan->ZoomX=sc;
 
-  yscale.GetWindowTextA(tmp);
-  sc=atof(tmp.GetBuffer());
+  yscale.GetWindowText(tmp);
+  sc=_wtof(tmp.GetBuffer());
   if(sc!=0)
     Conan->ZoomY=sc;
 
-  yoffset.GetWindowTextA(tmp);
-  sc=atof(tmp.GetBuffer());
+  yoffset.GetWindowText(tmp);
+  sc=_wtof(tmp.GetBuffer());
   Conan->YOffset=-sc;
 
-  xoffset.GetWindowTextA(tmp);
-  sc=atof(tmp.GetBuffer());
+  xoffset.GetWindowText(tmp);
+  sc=_wtof(tmp.GetBuffer());
   Conan->XOffset=-sc;
 
   Win->changed=1;
@@ -452,10 +452,10 @@ void CSaccadeSearchDlg::AutoSetXYOffset()
   }
   miny-=Win->RealGraphHeight()/2.0;
   CString tmp;
-  tmp.Format("%f",miny);
-  yoffset.SetWindowTextA(tmp);
+  tmp.Format(_T("%f"), miny);
+  yoffset.SetWindowText(tmp);
   tmp="0";
-  xoffset.SetWindowTextA(tmp);
+  xoffset.SetWindowText(tmp);
   Win->unhold();
 }
 
@@ -487,10 +487,10 @@ void CSaccadeSearchDlg::Move(int x,int y)
   //Win->changed=1;
   //Win->WinPaint();
   Win->hold();
-  tmp.Format("%f",-Conan->XOffset);
-  xoffset.SetWindowTextA(tmp);
-  tmp.Format("%f",-tmp2);
-  yoffset.SetWindowTextA(tmp);
+  tmp.Format( _T("%f"), -Conan->XOffset);
+  xoffset.SetWindowText(tmp);
+  tmp.Format(_T("%f"), -tmp2);
+  yoffset.SetWindowText(tmp);
   Win->unhold();
 }
 void CSaccadeSearchDlg::OnBnClickedCheck2()
@@ -520,22 +520,22 @@ void CSaccadeSearchDlg::OnLButtonDown(UINT nFlags, CPoint point)
     float NewXOffset=x-Win->RealGraphWidth()/4.0;
     float NewYOffset=y-Win->RealGraphHeight()/4.0;
     CString tmp;
-    tmp.Format("%f",NewXOffset);
-    xoffset.SetWindowTextA(tmp);
-    tmp.Format("%f",NewYOffset);
-    yoffset.SetWindowTextA(tmp);
+	tmp.Format(_T("%f"), NewXOffset);
+    xoffset.SetWindowText(tmp);
+	tmp.Format(_T("%f"), NewYOffset);
+    yoffset.SetWindowText(tmp);
 
 
-    xscale.GetWindowTextA(tmp);
-    float tmpf=atof(tmp.GetBuffer())*2;
-    tmp.Format("%f",tmpf);
-    xscale.SetWindowTextA(tmp);
+    xscale.GetWindowText(tmp);
+    float tmpf=_wtof(tmp.GetBuffer())*2;
+	tmp.Format(_T("%f"), tmpf);
+    xscale.SetWindowText(tmp);
 
     
-    yscale.GetWindowTextA(tmp);
-    tmpf=atof(tmp.GetBuffer())*2;
-    tmp.Format("%f",tmpf);
-    yscale.SetWindowTextA(tmp);
+    yscale.GetWindowText(tmp);
+    tmpf=_wtof(tmp.GetBuffer())*2;
+	tmp.Format(_T("%f"), tmpf);
+    yscale.SetWindowText(tmp);
     Win->changed=1;
   }
   Win->unhold();
@@ -557,41 +557,41 @@ void CSaccadeSearchDlg::OnRButtonDown(UINT nFlags, CPoint point)
     float NewXOffset=x-Win->RealGraphWidth();
     float NewYOffset=y-Win->RealGraphHeight();
     CString tmp;
-    tmp.Format("%f",NewXOffset);
-    xoffset.SetWindowTextA(tmp);
-    tmp.Format("%f",NewYOffset);
-    yoffset.SetWindowTextA(tmp);
+	tmp.Format(_T("%f"), NewXOffset);
+    xoffset.SetWindowText(tmp);
+	tmp.Format(_T("%f"), NewYOffset);
+    yoffset.SetWindowText(tmp);
 
 
-    xscale.GetWindowTextA(tmp);
-    float tmpf=atof(tmp.GetBuffer())/2.0;
-    tmp.Format("%f",tmpf);
-    xscale.SetWindowTextA(tmp);
+    xscale.GetWindowText(tmp);
+    float tmpf=_wtof(tmp.GetBuffer())/2.0;
+	tmp.Format(_T("%f"), tmpf);
+    xscale.SetWindowText(tmp);
 
     
-    yscale.GetWindowTextA(tmp);
-    tmpf=atof(tmp.GetBuffer())/2.0;
-    tmp.Format("%f",tmpf);
-    yscale.SetWindowTextA(tmp);
+    yscale.GetWindowText(tmp);
+    tmpf=_wtof(tmp.GetBuffer())/2.0;
+	tmp.Format(_T("%f"), tmpf);
+    yscale.SetWindowText(tmp);
   }
   else if(nFlags==667)//move message
   {
     float xmove=(float)point.x/Conan->ZoomX-Conan->XOffset;
     float ymove=-(float)point.y/Conan->ZoomY-Conan->YOffset;
     CString tmp;
-    tmp.Format("%f",xmove);
-    xoffset.SetWindowTextA(tmp);
-    tmp.Format("%f",ymove);
-    yoffset.SetWindowTextA(tmp);
+	tmp.Format(_T("%f"), xmove);
+    xoffset.SetWindowText(tmp);
+	tmp.Format(_T("%f"), ymove);
+    yoffset.SetWindowText(tmp);
   }
 
   else if(nFlags==668)
   {
     CString tmp;
-    tmp.Format("%1.0f",Win->RulerPointX);
-    rulerx.SetWindowTextA(tmp);
+	tmp.Format(_T("%1.0f"), Win->RulerPointX);
+    rulerx.SetWindowText(tmp);
     //tmp.Format("%f",Win->RulerPointY);
-    //rulery.SetWindowTextA(tmp);
+    //rulery.SetWindowText(tmp);
   }
   Win->changed=1;
   Win->unhold();
@@ -675,51 +675,51 @@ void CSaccadeSearchDlg::OnBnClickedRadio3()
 void CSaccadeSearchDlg::OutputSaccades()
 {
   CString tmp;
-  CurSaccadeT.GetWindowTextA(tmp);
-  if(atoi(tmp)!=Win->CurSaccade+1)
+  CurSaccadeT.GetWindowText(tmp);
+  if(_wtoi(tmp)!=Win->CurSaccade+1)
   {
-    tmp.Format("%d",Win->CurSaccade+1);
-    CurSaccadeT.SetWindowTextA(tmp);
+	  tmp.Format(_T("%d"), Win->CurSaccade + 1);
+    CurSaccadeT.SetWindowText(tmp);
   }
-  tmp.Format("%d",Conan->Saccades.size());
-  AllSaccades.SetWindowTextA(tmp);  
+  tmp.Format(_T("%d"), Conan->Saccades.size());
+  AllSaccades.SetWindowText(tmp);  
   if(Conan->Saccades.size()==0)
   {
-  this->SacChanT.SetWindowTextA("");
-  this->SacRecT.SetWindowTextA("");
-  this->SacXBeginT.SetWindowTextA("");
-  this->SacYBeginT.SetWindowTextA("");
-  this->SacXEndT.SetWindowTextA("");
-  this->SacYEndT.SetWindowTextA("");
-  this->SacAmplitudeT.SetWindowTextA("");
-  this->SacStimulCodeT.SetWindowTextA("");
-  this->SacTimeFromCalT.SetWindowTextA("");
-  this->SacTimeFromStimulT.SetWindowTextA("");
-  this->Notice.SetWindowTextA("");
+  this->SacChanT.Clear();
+  this->SacRecT.Clear();
+  this->SacXBeginT.Clear();
+  this->SacYBeginT.Clear();
+  this->SacXEndT.Clear();
+  this->SacYEndT.Clear();
+  this->SacAmplitudeT.Clear();
+  this->SacStimulCodeT.Clear();
+  this->SacTimeFromCalT.Clear();
+  this->SacTimeFromStimulT.Clear();
+  this->Notice.Clear();
     return;
   }
   Saccade* s=Conan->Saccades.at(Win->CurSaccade);
-  tmp.Format("%d",s->chan+1);
-  this->SacChanT.SetWindowTextA(tmp);
-  tmp.Format("%d",s->rec+1);
-  this->SacRecT.SetWindowTextA(tmp);
-  tmp.Format("%1.0f",s->BeginX);
-  this->SacXBeginT.SetWindowTextA(tmp);
-  tmp.Format("%1.4f",s->BeginY);
-  this->SacYBeginT.SetWindowTextA(tmp);
-  tmp.Format("%1.0f",s->EndX);
-  this->SacXEndT.SetWindowTextA(tmp);
-  tmp.Format("%1.4f",s->EndY);
-  this->SacYEndT.SetWindowTextA(tmp);
-  tmp.Format("%1.4f",s->AmplitudeY());
-  this->SacAmplitudeT.SetWindowTextA(tmp);
-  tmp.Format("%x",s->StimulCode);
-  this->SacStimulCodeT.SetWindowTextA(tmp);
-  tmp.Format("%1.0f",s->TimeFromCal);
-  this->SacTimeFromCalT.SetWindowTextA(tmp);
-  tmp.Format("%1.0f",s->TimeFromStimul);
-  this->SacTimeFromStimulT.SetWindowTextA(tmp);
-  this->Notice.SetWindowTextA(s->Notice);
+  tmp.Format(_T("%d"), s->chan + 1);
+  this->SacChanT.SetWindowText(tmp);
+  tmp.Format(_T("%d"), s->rec + 1);
+  this->SacRecT.SetWindowText(tmp);
+  tmp.Format(_T("%1.0f"), s->BeginX);
+  this->SacXBeginT.SetWindowText(tmp);
+  tmp.Format(_T("%1.4f"), s->BeginY);
+  this->SacYBeginT.SetWindowText(tmp);
+  tmp.Format(_T("%1.0f"), s->EndX);
+  this->SacXEndT.SetWindowText(tmp);
+  tmp.Format(_T("%1.4f"), s->EndY);
+  this->SacYEndT.SetWindowText(tmp);
+  tmp.Format(_T("%1.4f"), s->AmplitudeY());
+  this->SacAmplitudeT.SetWindowText(tmp);
+  tmp.Format(_T("%x"), s->StimulCode);
+  this->SacStimulCodeT.SetWindowText(tmp);
+  tmp.Format(_T("%1.0f"), s->TimeFromCal);
+  this->SacTimeFromCalT.SetWindowText(tmp);
+  tmp.Format(_T("%1.0f"), s->TimeFromStimul);
+  this->SacTimeFromStimulT.SetWindowText(tmp);
+  this->Notice.SetWindowText(s->Notice);
 
   Win->hold();
   Conan->CurChannel=s->chan;
@@ -772,7 +772,7 @@ void CSaccadeSearchDlg::OnBnClickedButton9()
 {
   if((ClearOther.GetCheck())&&(Conan->Saccades.size()!=0))
   {
-    int c=MessageBox("Are you sure that you want to clear all currently found results?","Confirmation",MB_OKCANCEL);
+    int c=MessageBox(_T("Are you sure that you want to clear all currently found results?"),_T("Confirmation"),MB_OKCANCEL);
     if(c==IDCANCEL)
       return;
   }
@@ -786,16 +786,16 @@ void CSaccadeSearchDlg::OnBnClickedButton9()
   float MinYSpeed,MinSpeedPoints,MinYLength,MinXLength,MinTimeOffset;
   CString tmp;
 
-  MinYSpeedT.GetWindowTextA(tmp);
-  MinYSpeed=atof(tmp);
-  MinSpeedPointsT.GetWindowTextA(tmp);
-  MinSpeedPoints=atof(tmp);
-  MinYLengthT.GetWindowTextA(tmp);
-  MinYLength=atof(tmp);
-  MinXLengthT.GetWindowTextA(tmp);
-  MinXLength=atof(tmp);
-  MinTimeOffsetT.GetWindowTextA(tmp);
-  MinTimeOffset=atof(tmp);
+  MinYSpeedT.GetWindowText(tmp);
+  MinYSpeed=_wtof(tmp);
+  MinSpeedPointsT.GetWindowText(tmp);
+  MinSpeedPoints=_wtof(tmp);
+  MinYLengthT.GetWindowText(tmp);
+  MinYLength=_wtof(tmp);
+  MinXLengthT.GetWindowText(tmp);
+  MinXLength=_wtof(tmp);
+  MinTimeOffsetT.GetWindowText(tmp);
+  MinTimeOffset=_wtof(tmp);
 
 
   bool CreateVirtual=0;
@@ -1139,6 +1139,16 @@ void CSaccadeSearchDlg::OnBnClickedButton8()
 //  Win->changed=1;
 //  Win->WinPaint();
 //}
+
+const wchar_t *GetWC(const char *c)
+{
+	const size_t cSize = strlen(c) + 1;
+	wchar_t* wc = new wchar_t[cSize];
+	mbstowcs(wc, c, cSize);
+
+	return wc;
+}
+
 void CSaccadeSearchDlg::FocusToSaccade()
 {
   if(Conan->Saccades.size()==0)
@@ -1147,10 +1157,10 @@ void CSaccadeSearchDlg::FocusToSaccade()
   float y=Conan->Saccades.at(Win->CurSaccade)->BeginY-Win->RealGraphHeight()/2;
   CString tmp;
   Win->hold();
-  tmp.Format("%f",x);
-  xoffset.SetWindowTextA(tmp);
-  tmp.Format("%f",y);
-  yoffset.SetWindowTextA(tmp);
+  tmp.Format(_T("%f"), x);
+  xoffset.SetWindowText(tmp);
+  tmp.Format(_T("%f"), y);
+  yoffset.SetWindowText(tmp);
   Win->changed=1;
   Win->unhold();
 }
@@ -1166,35 +1176,35 @@ void CSaccadeSearchDlg::OnBnClickedButton12()
   }
   CString tmp;
   Saccade* s=Conan->Saccades.at(Win->CurSaccade);
-  this->Notice.GetWindowTextA(s->Notice);
-  this->SacChanT.GetWindowTextA(tmp);
-  s->chan=atoi(tmp)-1;
+  this->Notice.GetWindowText(s->Notice);
+  this->SacChanT.GetWindowText(tmp);
+  s->chan = _wtoi(tmp) - 1;
   if(s->chan<0)
     s->chan=0;
-  this->SacRecT.GetWindowTextA(tmp);
-  s->rec=atoi(tmp)-1;
+  this->SacRecT.GetWindowText(tmp);
+  s->rec = _wtoi(tmp) - 1;
   if(s->rec<0)
     s->rec=0;
-  this->SacXBeginT.GetWindowTextA(tmp);
-  s->BeginX=atof(tmp);
-  this->SacYBeginT.GetWindowTextA(tmp);
-  s->BeginY=atof(tmp);
-  this->SacXEndT.GetWindowTextA(tmp);
-  s->EndX=atof(tmp);
-  this->SacYEndT.GetWindowTextA(tmp);
-  s->EndY=atof(tmp);
+  this->SacXBeginT.GetWindowText(tmp);
+  s->BeginX=_wtof(tmp);
+  this->SacYBeginT.GetWindowText(tmp);
+  s->BeginY=_wtof(tmp);
+  this->SacXEndT.GetWindowText(tmp);
+  s->EndX=_wtof(tmp);
+  this->SacYEndT.GetWindowText(tmp);
+  s->EndY=_wtof(tmp);
 
 
-  tmp.Format("%1.4f",s->AmplitudeY());
-  this->SacAmplitudeT.SetWindowTextA(tmp);
+  tmp.Format(_T("%1.4f"), s->AmplitudeY());
+  this->SacAmplitudeT.SetWindowText(tmp);
 
-  this->SacStimulCodeT.GetWindowTextA(tmp);
-  //s->StimulCode=atoi(tmp);
-  sscanf_s(tmp,"%x",&s->StimulCode);
-  this->SacTimeFromCalT.GetWindowTextA(tmp);
-  s->TimeFromCal=atof(tmp);
-  this->SacTimeFromStimulT.GetWindowTextA(tmp);
-  s->TimeFromStimul=atof(tmp);
+  this->SacStimulCodeT.GetWindowText(tmp);
+  //s->StimulCode=_wtoi(tmp);
+  swscanf_s(tmp, _T("%x"), &s->StimulCode);
+  this->SacTimeFromCalT.GetWindowText(tmp);
+  s->TimeFromCal=_wtof(tmp);
+  this->SacTimeFromStimulT.GetWindowText(tmp);
+  s->TimeFromStimul=_wtof(tmp);
   OutputSaccades();
   FocusToSaccade();
 }
@@ -1228,20 +1238,20 @@ void CSaccadeSearchDlg::OnBnClickedButton7()
     SearchForCal.SetCheck(1);
     PreprocessAllRecords.SetCheck(1);
     CreateVirtualSaccades.SetCheck(1);
-    MinYSpeedT.SetWindowTextA("1");
-    MinSpeedPointsT.SetWindowTextA("10");
-    MinYLengthT.SetWindowTextA("100");
-    MinXLengthT.SetWindowTextA("1");
-    MinTimeOffsetT.SetWindowTextA("0");
-    ApproxPrec.SetWindowTextA("1");
-    AprIterationsT.SetWindowTextA("5");
-    MinExtremPointsT.SetWindowTextA("10");
+	MinYSpeedT.SetWindowText(_T("1"));
+	MinSpeedPointsT.SetWindowText(_T("10"));
+	MinYLengthT.SetWindowText(_T("100"));
+	MinXLengthT.SetWindowText(_T("1"));
+	MinTimeOffsetT.SetWindowText(_T("0"));
+	ApproxPrec.SetWindowText(_T("1"));
+	AprIterationsT.SetWindowText(_T("5"));
+	MinExtremPointsT.SetWindowText(_T("10"));
     UseApproximation.SetCheck(1);
     FirstLoad=false;
   }
   //this->DoModal();
   CString path;
-  CFileDialog dlg(TRUE/*Open=TRUE Save=False*/,"cad"/*Filename Extension*/,""/*Initial Filename*/,OFN_ENABLESIZING|OFN_EXPLORER|OFN_FILEMUSTEXIST/*Flags*/,"Conan File Format(*.cad)|*.cad||"/*Filetype Filter*/,this/*parent Window*/);
+  CFileDialog dlg(TRUE/*Open=TRUE Save=False*/, _T("cad")/*Filename Extension*/, _T("")/*Initial Filename*/, OFN_ENABLESIZING | OFN_EXPLORER | OFN_FILEMUSTEXIST/*Flags*/, _T("Conan File Format(*.cad)|*.cad||")/*Filetype Filter*/, this/*parent Window*/);
 	int z=dlg.DoModal();
   if (z == IDOK)
 		path=dlg.GetPathName();
@@ -1253,7 +1263,7 @@ void CSaccadeSearchDlg::OnBnClickedButton7()
     return;
   }
 
-  OpenedFile.SetWindowTextA(path);
+  OpenedFile.SetWindowText(path);
   if(Conan!=NULL)
     delete(Conan);
   Conan=ReadConanFile(path.GetBuffer(),&log);
@@ -1263,11 +1273,13 @@ void CSaccadeSearchDlg::OnBnClickedButton7()
   chan.ResetContent();
   rec.ResetContent();
   CString chnum,chname,channels;
-  channels.Append(Conan->Header->chNames);
+  const wchar_t* tmp33 = GetWC(Conan->Header->chNames);
+  channels.Append(tmp33);
+  delete(tmp33);
   for(int i=0;i<Conan->Header->nChan;i++)
   {
     chname=channels.Mid(i*4,4);
-    chnum.Format("%d ",i+1);
+	chnum.Format(_T("%d "), i + 1);
     chnum.Append(chname);
     chan.AddString(chnum.GetBuffer());
   }
@@ -1287,7 +1299,7 @@ void CSaccadeSearchDlg::OnBnClickedButton7()
   CString RecNum;
   for(int i=0;i<Conan->Header->nRec;i++)
   {
-    RecNum.Format("%d ",i+1);
+	  RecNum.Format(_T("%d "), i + 1);
     rec.AddString(RecNum.GetBuffer());
   }
   SetDropDownHeight(&rec,20);
@@ -1296,16 +1308,16 @@ void CSaccadeSearchDlg::OnBnClickedButton7()
 
 
   CString tmp;
-  tmp.Format("%d",Conan->Header->freq);
-  xfreq.SetWindowTextA(tmp);
+  tmp.Format(_T("%d"), Conan->Header->freq);
+  xfreq.SetWindowText(tmp);
 
 
 	this->RecreateEeGraph();	
   Win->hold();
-  xscale.SetWindowTextA("0.2");
-  yscale.SetWindowTextA("0.75");
-  xoffset.SetWindowTextA("0");
-  yoffset.SetWindowTextA("0");
+  xscale.SetWindowText(_T("0.2"));
+  yscale.SetWindowText(_T("0.75"));
+  xoffset.SetWindowText(_T("0"));
+  yoffset.SetWindowText(_T("0"));
 
   AutoDefineYOffset.SetCheck(1);
   OnBnClickedRadio2();
@@ -1317,25 +1329,25 @@ void CSaccadeSearchDlg::OnBnClickedButton7()
   /*
   
   do NOT reset parameters
-  MinYSpeedT.SetWindowTextA("1");
-  MinSpeedPointsT.SetWindowTextA("10");
-  MinYLengthT.SetWindowTextA("100");
-  MinXLengthT.SetWindowTextA("1");
-  MinTimeOffsetT.SetWindowTextA("0");
+  MinYSpeedT.SetWindowText("1");
+  MinSpeedPointsT.SetWindowText("10");
+  MinYLengthT.SetWindowText("100");
+  MinXLengthT.SetWindowText("1");
+  MinTimeOffsetT.SetWindowText("0");
 
   
-  ApproxPrec.SetWindowTextA("1");
-  AprIterationsT.SetWindowTextA("5");
-  MinExtremPointsT.SetWindowTextA("10");
+  ApproxPrec.SetWindowText("1");
+  AprIterationsT.SetWindowText("5");
+  MinExtremPointsT.SetWindowText("10");
 
   UseApproximation.SetCheck(1);*/
   
-  ApproxPrec.GetWindowTextA(tmp);
-  Conan->AproxCoef=atoi(tmp);
-  AprIterationsT.GetWindowTextA(tmp);
-  Conan->Iterations=atoi(tmp);
-  MinExtremPointsT.GetWindowTextA(tmp);
-  Conan->MinExtremumPoints=atoi(tmp);
+  ApproxPrec.GetWindowText(tmp);
+  Conan->AproxCoef = _wtoi(tmp);
+  AprIterationsT.GetWindowText(tmp);
+  Conan->Iterations = _wtoi(tmp);
+  MinExtremPointsT.GetWindowText(tmp);
+  Conan->MinExtremumPoints = _wtoi(tmp);
   Conan->Approximate=UseApproximation.GetCheck();
   Approximate(Conan->CurChannel,Conan->CurRec);
   
@@ -1368,16 +1380,16 @@ void CSaccadeSearchDlg::OnBnClickedButton14()
     ;//CurSaccade++;
   else if(Conan->Saccades.size()==0)
   {
-    this->SacChanT.SetWindowTextA("");
-    this->SacRecT.SetWindowTextA("");
-    this->SacXBeginT.SetWindowTextA("");
-    this->SacYBeginT.SetWindowTextA("");
-    this->SacXEndT.SetWindowTextA("");
-    this->SacYEndT.SetWindowTextA("");
-    this->SacAmplitudeT.SetWindowTextA("");
-    this->SacStimulCodeT.SetWindowTextA("");
-    this->SacTimeFromCalT.SetWindowTextA("");
-    this->SacTimeFromStimulT.SetWindowTextA("");
+    this->SacChanT.Clear();
+	this->SacRecT.Clear();
+    this->SacXBeginT.Clear();
+    this->SacYBeginT.Clear();
+    this->SacXEndT.Clear();
+    this->SacYEndT.Clear();
+    this->SacAmplitudeT.Clear();
+    this->SacStimulCodeT.Clear();
+    this->SacTimeFromCalT.Clear();
+    this->SacTimeFromStimulT.Clear();
   }
   if(Conan->Saccades.size()==0)
   {
@@ -1403,7 +1415,7 @@ void CSaccadeSearchDlg::OnBnClickedButton1()
   Saccade* s;
   Saccade* s2;
   CString path;
-  CFileDialog dlg(FALSE/*Open=TRUE Save=False*/,"txt"/*Filename Extension*/,""/*Initial Filename*/,OFN_ENABLESIZING|OFN_EXPLORER/*Flags*/,"Saccade file(*.txt)|*.txt||"/*Filetype Filter*/,this/*parent Window*/);
+  CFileDialog dlg(FALSE/*Open=TRUE Save=False*/,_T("txt")/*Filename Extension*/,_T("")/*Initial Filename*/,OFN_ENABLESIZING|OFN_EXPLORER/*Flags*/,_T("Saccade file(*.txt)|*.txt||")/*Filetype Filter*/,this/*parent Window*/);
 	int z=dlg.DoModal();
   if (z!= IDOK)
     return;
@@ -1411,10 +1423,10 @@ void CSaccadeSearchDlg::OnBnClickedButton1()
   path=dlg.GetPathName();
   bool OhFileExists=FileExists(path);
   FILE * pFile;
-  fopen_s(&pFile, path, "a+");
+  _wfopen_s(&pFile, path, _T("a+"));
   CString header;
 
-  OpenedFile.GetWindowTextA(path);
+  OpenedFile.GetWindowText(path);
   path=path.Mid(1+path.ReverseFind('\\'));
   if(method==0 || method==1)
   {
@@ -1453,10 +1465,10 @@ void CSaccadeSearchDlg::OnBnClickedButton1()
       else if(SacQ>2)//like fatal error
       {
         CString err;
-        err.Format("In record # %d, %d saccades found. Please, correct it and try to save again. Aborting...",RecNum+1,SacQ);
+		err.Format(_T("In record # %d, %d saccades found. Please, correct it and try to save again. Aborting..."), RecNum + 1, SacQ);
         fwrite(err,1,err.GetLength(),pFile);
         fclose(pFile);
-        MessageBox(err,"Error",MB_OK);
+		MessageBox(err, _T("Error"), MB_OK);
         return;
       }
       else if(SacQ==1)
@@ -1482,21 +1494,21 @@ void CSaccadeSearchDlg::OnBnClickedButton6()
   bool erase=0;
   if(Conan->Saccades.size())
   {
-    int c=MessageBox("Do you want to erase currently found values?","Confirmation",MB_YESNO);
+	  int c = MessageBox(_T("Do you want to erase currently found values?"), _T("Confirmation"), MB_YESNO);
     if(c==IDYES)
       erase=1;
   }
   CString path;
-  CFileDialog dlg(TRUE/*Open=TRUE Save=False*/,"sac"/*Filename Extension*/,""/*Initial Filename*/,OFN_ENABLESIZING|OFN_EXPLORER|OFN_FILEMUSTEXIST/*Flags*/,"Saccade file(*.sac)|*.sac||"/*Filetype Filter*/,this/*parent Window*/);
+  CFileDialog dlg(TRUE/*Open=TRUE Save=False*/, _T("sac")/*Filename Extension*/, _T("")/*Initial Filename*/, OFN_ENABLESIZING | OFN_EXPLORER | OFN_FILEMUSTEXIST/*Flags*/, _T("Saccade file(*.sac)|*.sac||")/*Filetype Filter*/, this/*parent Window*/);
 	int z=dlg.DoModal();
   if (z == IDOK)
   {
 		path=dlg.GetPathName();
     FILE * pFile;
-    fopen_s(&pFile, path.GetBuffer(), "r");
+    _wfopen_s(&pFile, path.GetBuffer(), _T("r"));
     if (pFile==NULL)
     {
-	    MessageBox("Íå ìîãó ïðî÷èòàòü ôàéë!","Îøèáêà",MB_OK);
+		MessageBox(_T("ÐÐµ Ð¼Ð¾Ð³Ñƒ Ð¿Ñ€Ð¾Ñ‡Ð¸Ñ‚Ð°Ñ‚ÑŒ Ñ„Ð°Ð¹Ð»!"), _T("ÐžÑˆÐ¸Ð±ÐºÐ°"), MB_OK);
 	    return;
     }
     //erase
@@ -1533,8 +1545,8 @@ void CSaccadeSearchDlg::OnEnChangeEdit26()
   if(Conan==NULL)
     return;
   CString tmp;
-  ApproxPrec.GetWindowTextA(tmp);
-  Conan->AproxCoef=atoi(tmp);
+  ApproxPrec.GetWindowText(tmp);
+  Conan->AproxCoef=_wtoi(tmp);
   Approximate(Conan->CurChannel,Conan->CurRec);
 }
 
@@ -1625,8 +1637,8 @@ void CSaccadeSearchDlg::OnEnChangeEdit27()
   if(Conan==NULL)
     return;
   CString tmp;
-  AprIterationsT.GetWindowTextA(tmp);
-  Conan->Iterations=atoi(tmp);
+  AprIterationsT.GetWindowText(tmp);
+  Conan->Iterations=_wtoi(tmp);
   Approximate(Conan->CurChannel,Conan->CurRec);
 }
 
@@ -1635,8 +1647,8 @@ void CSaccadeSearchDlg::OnEnChangeEdit28()
   if(Conan==NULL)
     return;
   CString tmp;
-  MinExtremPointsT.GetWindowTextA(tmp);
-  Conan->MinExtremumPoints=atoi(tmp);
+  MinExtremPointsT.GetWindowText(tmp);
+  Conan->MinExtremumPoints=_wtoi(tmp);
   Approximate(Conan->CurChannel,Conan->CurRec);
 }
 
@@ -1665,8 +1677,8 @@ void CSaccadeSearchDlg::OnEnChangeEdit7()
 {
   //next saccade
   CString tmp;
-  CurSaccadeT.GetWindowTextA(tmp);
-  unsigned int c=atoi(tmp);
+  CurSaccadeT.GetWindowText(tmp);
+  unsigned int c=_wtoi(tmp);
   if((c>Conan->Saccades.size()) ||(Conan->Saccades.size()==0))
     return;//saccade num, not valid
   Win->CurSaccade=c-1;
@@ -1678,16 +1690,16 @@ void CSaccadeSearchDlg::OnEnChangeEdit7()
 
 void CSaccadeSearchDlg::ScanHexToText(CEdit* from,StimulVec* to)
 {
-  int s=from->GetWindowTextLengthA();
-  char* buf=new char[s+1];
-  from->GetWindowTextA(buf,s+1);
+  int s=from->GetWindowTextLength();
+  TCHAR* buf = new TCHAR[s + 1];
+  from->GetWindowText(buf,s+1);
   int c=0;
   for(int i=0;i<s;i++)
   {
     if(i==0)
-      sscanf_s((&buf[0]+i),"%x",&c);
+		swscanf_s((&buf[0] + i), _T("%x"), &c);
     else if(buf[i]=='\n' && (i+1<s))
-      sscanf_s((&buf[0]+i+1),"%x",&c);
+		swscanf_s((&buf[0] + i + 1), _T("%x"), &c);
     else
       continue;
     to->push_back(c);
@@ -1708,13 +1720,13 @@ void CSaccadeSearchDlg::OnEnChangeEdit15()
 void CSaccadeSearchDlg::OnEnChangeEdit8()
 {
   CString tmp;
-  rulerx.GetWindowTextA(tmp);
-  float x=atof(tmp);
+  rulerx.GetWindowText(tmp);
+  float x=_wtof(tmp);
   float y=Win->GetYFromX(Conan->CurChannel,Conan->CurRec,x);
   Win->RulerPointX=x;
   Win->RulerPointY=y;
-  tmp.Format("%f",y);
-  rulery.SetWindowTextA(tmp);
+  tmp.Format(_T("%f"), y);
+  rulery.SetWindowText(tmp);
   Win->changed=1;
   Win->WinPaint();
 }
@@ -1729,11 +1741,11 @@ void CSaccadeSearchDlg::OnEnChangeEdit18()
   if(sac->AmplitudeY()==0)
     return;//no stimul time for virtual saccades!
   CString tmp;
-  this->SacXBeginT.GetWindowTextA(tmp);
-  float x=atof(tmp);
+  this->SacXBeginT.GetWindowText(tmp);
+  float x=_wtof(tmp);
   float y=Win->GetYFromX(sac->chan,sac->rec,x);
-  tmp.Format("%1.0f",y);
-  this->SacYBeginT.SetWindowTextA(tmp);
+  tmp.Format(_T("%1.0f"), y);
+  this->SacYBeginT.SetWindowText(tmp);
 
   //set new stimul & calibration stimul time
   int n=Win->XRealToPoint(x);
@@ -1772,11 +1784,11 @@ void CSaccadeSearchDlg::OnEnChangeEdit18()
     }
   }
   //all found
-  tmp.Format("%1.0f",sac->TimeFromCal);
-  SacTimeFromCalT.SetWindowTextA(tmp);
+  tmp.Format(_T("%1.0f"), sac->TimeFromCal);
+  SacTimeFromCalT.SetWindowText(tmp);
 
-  tmp.Format("%1.0f",sac->TimeFromStimul);
-  SacTimeFromStimulT.SetWindowTextA(tmp);
+  tmp.Format(_T("%1.0f"), sac->TimeFromStimul);
+  SacTimeFromStimulT.SetWindowText(tmp);
 }
 
 void CSaccadeSearchDlg::OnEnChangeEdit20()
@@ -1785,12 +1797,12 @@ void CSaccadeSearchDlg::OnEnChangeEdit20()
   if(Conan->Saccades.size()<=Win->CurSaccade)
     return;
   CString tmp;
-  this->SacXEndT.GetWindowTextA(tmp);
-  float x=(float)atof(tmp);
+  this->SacXEndT.GetWindowText(tmp);
+  float x=(float)_wtof(tmp);
   Saccade * sac=Conan->Saccades.at(Win->CurSaccade);
   float y=Win->GetYFromX(sac->chan,sac->rec,x);
-  tmp.Format("%1.0f",y);
-  this->SacYEndT.SetWindowTextA(tmp);
+  tmp.Format(_T("%1.0f"), y);
+  this->SacYEndT.SetWindowText(tmp);
   
 }
 
@@ -1799,8 +1811,8 @@ void CSaccadeSearchDlg::OnBnClickedButton10()
   if(Conan->Saccades.size()==0)
     return;
   CString tmp;
-  rulerx.GetWindowTextA(tmp);
-  this->SacXBeginT.SetWindowTextA(tmp);
+  rulerx.GetWindowText(tmp);
+  this->SacXBeginT.SetWindowText(tmp);
   OnEnChangeEdit18();
 }
 
@@ -1809,8 +1821,8 @@ void CSaccadeSearchDlg::OnBnClickedButton15()
   if(Conan->Saccades.size()==0)
     return;
   CString tmp;
-  rulerx.GetWindowTextA(tmp);
-  this->SacXEndT.SetWindowTextA(tmp);
+  rulerx.GetWindowText(tmp);
+  this->SacXEndT.SetWindowText(tmp);
   OnEnChangeEdit20();
 }
 
@@ -1819,125 +1831,125 @@ void CSaccadeSearchDlg::OnBnClickedButton17()
   CString tmp;
   CString data;
 
-  tmp.Format("%d",this->chan.GetCurSel());
+  tmp.Format(_T("%d"), this->chan.GetCurSel());
   data.Append(tmp);
-  data.Append(" ");
+  data.Append(_T(" "));
   
-  tmp.Format("%d",this->rec.GetCurSel());
+  tmp.Format(_T("%d"), this->rec.GetCurSel());
   data.Append(tmp);
-  data.Append(" ");
+  data.Append(_T(" "));
 
-  this->xscale.GetWindowTextA(tmp);
+  this->xscale.GetWindowText(tmp);
   data.Append(tmp);
-  data.Append(" ");
+  data.Append(_T(" "));
 
-  this->yscale.GetWindowTextA(tmp);
+  this->yscale.GetWindowText(tmp);
   data.Append(tmp);
-  data.Append(" ");
+  data.Append(_T(" "));
 
-  this->xoffset.GetWindowTextA(tmp);
+  this->xoffset.GetWindowText(tmp);
   data.Append(tmp);
-  data.Append(" ");
+  data.Append(_T(" "));
 
-  this->yoffset.GetWindowTextA(tmp);
+  this->yoffset.GetWindowText(tmp);
   data.Append(tmp);
-  data.Append(" ");
+  data.Append(_T(" "));
   
-  tmp.Format("%d",this->AutoDefineYOffset.GetCheck());
+  tmp.Format(_T("%d"),this->AutoDefineYOffset.GetCheck());
   data.Append(tmp);
-  data.Append(" ");
+  data.Append(_T(" "));
 
-  tmp.Format("%d",this->GridEnabled.GetCheck());
+  tmp.Format(_T("%d"), this->GridEnabled.GetCheck());
   data.Append(tmp);
-  data.Append(" ");
+  data.Append(_T(" "));
 
-  tmp.Format("%d",this->showpoints.GetCheck());
+  tmp.Format(_T("%d"), this->showpoints.GetCheck());
   data.Append(tmp);
-  data.Append(" ");
+  data.Append(_T(" "));
 
-  tmp.Format("%d",this->mouse_move.GetCheck());
+  tmp.Format(_T("%d"), this->mouse_move.GetCheck());
   data.Append(tmp);
-  data.Append(" ");
+  data.Append(_T(" "));
 
-  tmp.Format("%d",this->mouse_zoom.GetCheck());
+  tmp.Format(_T("%d"), this->mouse_zoom.GetCheck());
   data.Append(tmp);
-  data.Append(" ");
+  data.Append(_T(" "));
 
-  tmp.Format("%d",this->mouse_ruler.GetCheck());
+  tmp.Format(_T("%d"), this->mouse_ruler.GetCheck());
   data.Append(tmp);
-  data.Append(" ");
+  data.Append(_T(" "));
 
-  this->rulerx.GetWindowTextA(tmp);
+  this->rulerx.GetWindowText(tmp);
   data.Append(tmp);
-  data.Append(" ");
+  data.Append(_T(" "));
 
   ///search options
-  this->MinSpeedPointsT.GetWindowTextA(tmp);
+  this->MinSpeedPointsT.GetWindowText(tmp);
   data.Append(tmp);
-  data.Append(" ");
-  this->MinTimeOffsetT.GetWindowTextA(tmp);
+  data.Append(_T(" "));
+  this->MinTimeOffsetT.GetWindowText(tmp);
   data.Append(tmp);
-  data.Append(" ");
-  this->MinXLengthT.GetWindowTextA(tmp);
+  data.Append(_T(" "));
+  this->MinXLengthT.GetWindowText(tmp);
   data.Append(tmp);
-  data.Append(" ");
-  this->MinYLengthT.GetWindowTextA(tmp);
+  data.Append(_T(" "));
+  this->MinYLengthT.GetWindowText(tmp);
   data.Append(tmp);
-  data.Append(" ");
-  this->MinYSpeedT.GetWindowTextA(tmp);
+  data.Append(_T(" "));
+  this->MinYSpeedT.GetWindowText(tmp);
   data.Append(tmp);
-  data.Append(" ");
+  data.Append(_T(" "));
   
-  tmp.Format("%d",this->SearchMethod.GetCurSel());
+  tmp.Format(_T("%d"), this->SearchMethod.GetCurSel());
   data.Append(tmp);
-  data.Append(" ");
+  data.Append(_T(" "));
 
-  tmp.Format("%d",this->CreateVirtualSaccades.GetCheck());
+  tmp.Format(_T("%d"), this->CreateVirtualSaccades.GetCheck());
   data.Append(tmp);
-  data.Append(" ");
-  tmp.Format("%d",this->ClearOther.GetCheck());
+  data.Append(_T(" "));
+  tmp.Format(_T("%d"), this->ClearOther.GetCheck());
   data.Append(tmp);
-  data.Append(" ");
-  tmp.Format("%d",this->PreprocessAllRecords.GetCheck());
+  data.Append(_T(" "));
+  tmp.Format(_T("%d"), this->PreprocessAllRecords.GetCheck());
   data.Append(tmp);
-  data.Append(" ");
-  tmp.Format("%d",this->SearchForCal.GetCheck());
+  data.Append(_T(" "));
+  tmp.Format(_T("%d"), this->SearchForCal.GetCheck());
   data.Append(tmp);
-  data.Append(" ");
+  data.Append(_T(" "));
 
 
-  tmp.Format("%d",this->UseApproximation.GetCheck());
+  tmp.Format(_T("%d"), this->UseApproximation.GetCheck());
   data.Append(tmp);
-  data.Append(" ");
+  data.Append(_T(" "));
 
-  this->ApproxPrec.GetWindowTextA(tmp);
+  this->ApproxPrec.GetWindowText(tmp);
   data.Append(tmp);
-  data.Append(" ");
-  this->AprIterationsT.GetWindowTextA(tmp);
+  data.Append(_T(" "));
+  this->AprIterationsT.GetWindowText(tmp);
   data.Append(tmp);
-  data.Append(" ");
-  this->MinExtremPointsT.GetWindowTextA(tmp);
+  data.Append(_T(" "));
+  this->MinExtremPointsT.GetWindowText(tmp);
   data.Append(tmp);
-  data.Append(" ");
+  data.Append(_T(" "));
 
-  data.Append("<PositiveStimuls>");
-  this->PositiveStimulCodesT.GetWindowTextA(tmp);
+  data.Append(_T("<PositiveStimuls>"));
+  this->PositiveStimulCodesT.GetWindowText(tmp);
   data.Append(tmp);
-  data.Append("</PositiveStimuls>");
-  data.Append("<NegativeStimuls>");
-  this->NegativeStimulCodesT.GetWindowTextA(tmp);
+  data.Append(_T("</PositiveStimuls>"));
+  data.Append(_T("<NegativeStimuls>"));
+  this->NegativeStimulCodesT.GetWindowText(tmp);
   data.Append(tmp);
-  data.Append("</NegativeStimuls>");
+  data.Append(_T("</NegativeStimuls>"));
 
   
   CString path;
-  CFileDialog dlg(FALSE/*Open=TRUE Save=False*/,"cfg"/*Filename Extension*/,""/*Initial Filename*/,OFN_ENABLESIZING|OFN_EXPLORER/*Flags*/,"Config file(*.cfg)|*.cfg||"/*Filetype Filter*/,this/*parent Window*/);
+  CFileDialog dlg(FALSE/*Open=TRUE Save=False*/, _T("cfg")/*Filename Extension*/, _T("")/*Initial Filename*/, OFN_ENABLESIZING | OFN_EXPLORER/*Flags*/, _T("Config file(*.cfg)|*.cfg||")/*Filetype Filter*/, this/*parent Window*/);
 	int z=dlg.DoModal();
   if (z == IDOK)
   {
 		path=dlg.GetPathName();
     FILE * pFile;
-    fopen_s(&pFile, path, "w");
+	_wfopen_s(&pFile, path, _T("w"));
     fwrite(data,1,data.GetLength(),pFile);
     fclose(pFile);
   }
@@ -1946,7 +1958,7 @@ void CSaccadeSearchDlg::OnBnClickedButton17()
 void CSaccadeSearchDlg::OnBnClickedButton16()
 {
   CString path;
-  CFileDialog dlg(TRUE/*Open=TRUE Save=False*/,"cfg"/*Filename Extension*/,""/*Initial Filename*/,OFN_ENABLESIZING|OFN_EXPLORER|OFN_FILEMUSTEXIST/*Flags*/,"Config file(*.cfg)|*.cfg||"/*Filetype Filter*/,this/*parent Window*/);
+  CFileDialog dlg(TRUE/*Open=TRUE Save=False*/, _T("cfg")/*Filename Extension*/, _T("")/*Initial Filename*/, OFN_ENABLESIZING | OFN_EXPLORER | OFN_FILEMUSTEXIST/*Flags*/, _T("Config file(*.cfg)|*.cfg||")/*Filetype Filter*/, this/*parent Window*/);
 	int z=dlg.DoModal();
   if (z == IDOK)
 		path=dlg.GetPathName();
@@ -1956,14 +1968,14 @@ void CSaccadeSearchDlg::OnBnClickedButton16()
   Win->hold();
   FILE * pFile;
   long lSize;
-  char * buffer;
+  TCHAR* buffer;
   size_t result;
 
-  fopen_s(&pFile,path,"r+t");
+  _wfopen_s(&pFile, path, _T("r+t"));
   fseek (pFile , 0 , SEEK_END);
   lSize = ftell (pFile);
   rewind (pFile);
-  buffer = new char[lSize];
+  buffer = new TCHAR[lSize];
   result = fread (buffer,1,lSize,pFile);
   fclose(pFile);
   CString data;
@@ -1974,155 +1986,155 @@ void CSaccadeSearchDlg::OnBnClickedButton16()
   int p2=0;
   CString tmp;
 //////
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  chan.SetCurSel(atoi(tmp));
+  chan.SetCurSel(_wtoi(tmp));
   p=p2+1;
   
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  rec.SetCurSel(atoi(tmp));
+  rec.SetCurSel(_wtoi(tmp));
   p=p2+1;
   
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  xscale.SetWindowTextA(tmp);
+  xscale.SetWindowText(tmp);
   p=p2+1;
   
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  yscale.SetWindowTextA(tmp);
+  yscale.SetWindowText(tmp);
   p=p2+1;
   
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  xoffset.SetWindowTextA(tmp);
+  xoffset.SetWindowText(tmp);
   p=p2+1;
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  yoffset.SetWindowTextA(tmp);
+  yoffset.SetWindowText(tmp);
   p=p2+1;
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  AutoDefineYOffset.SetCheck(atoi(tmp));
+  AutoDefineYOffset.SetCheck(_wtoi(tmp));
   p=p2+1;
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  GridEnabled.SetCheck(atoi(tmp));
+  GridEnabled.SetCheck(_wtoi(tmp));
   p=p2+1;
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  showpoints.SetCheck(atoi(tmp));
+  showpoints.SetCheck(_wtoi(tmp));
   p=p2+1;
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  if(atoi(tmp))
+  if(_wtoi(tmp))
     OnBnClickedRadio2();
   p=p2+1;
 
-  p2=data.Find(" ",p);
-  if(atoi(tmp))
+  p2 = data.Find(_T(" "), p);
+  if(_wtoi(tmp))
     OnBnClickedRadio1();
   p=p2+1;
 
-  p2=data.Find(" ",p);
-  if(atoi(tmp))
+  p2 = data.Find(_T(" "), p);
+  if(_wtoi(tmp))
     OnBnClickedRadio3();
   p=p2+1;
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  rulerx.SetWindowTextA(tmp);
+  rulerx.SetWindowText(tmp);
   p=p2+1;
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  MinSpeedPointsT.SetWindowTextA(tmp);
+  MinSpeedPointsT.SetWindowText(tmp);
   p=p2+1;
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  MinTimeOffsetT.SetWindowTextA(tmp);
+  MinTimeOffsetT.SetWindowText(tmp);
   p=p2+1;
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  MinXLengthT.SetWindowTextA(tmp);
+  MinXLengthT.SetWindowText(tmp);
   p=p2+1;
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  MinYLengthT.SetWindowTextA(tmp);
+  MinYLengthT.SetWindowText(tmp);
   p=p2+1;
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  MinYSpeedT.SetWindowTextA(tmp);
+  MinYSpeedT.SetWindowText(tmp);
   p=p2+1;
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  SearchMethod.SetCurSel(atoi(tmp));
+  SearchMethod.SetCurSel(_wtoi(tmp));
   p=p2+1;
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  CreateVirtualSaccades.SetCheck(atoi(tmp));
+  CreateVirtualSaccades.SetCheck(_wtoi(tmp));
   p=p2+1;
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  ClearOther.SetCheck(atoi(tmp));
+  ClearOther.SetCheck(_wtoi(tmp));
   p=p2+1;
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  PreprocessAllRecords.SetCheck(atoi(tmp));
+  PreprocessAllRecords.SetCheck(_wtoi(tmp));
   p=p2+1;
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  SearchForCal.SetCheck(atoi(tmp));
+  SearchForCal.SetCheck(_wtoi(tmp));
   p=p2+1;
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  UseApproximation.SetCheck(atoi(tmp));
+  UseApproximation.SetCheck(_wtoi(tmp));
   p=p2+1;
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  ApproxPrec.SetWindowTextA(tmp);
+  ApproxPrec.SetWindowText(tmp);
   p=p2+1;
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  AprIterationsT.SetWindowTextA(tmp);
+  AprIterationsT.SetWindowText(tmp);
   p=p2+1;
 
-  p2=data.Find(" ",p);
+  p2 = data.Find(_T(" "), p);
   tmp=data.Mid(p,p2-p);
-  MinExtremPointsT.SetWindowTextA(tmp);
+  MinExtremPointsT.SetWindowText(tmp);
   p=p2+1;
 
-  p=data.Find("<PositiveStimuls>",p2);
-  p2=data.Find("</PositiveStimuls>",p);
+  p = data.Find(_T("<PositiveStimuls>"), p2);
+  p2 = data.Find(_T("</PositiveStimuls>"), p);
   tmp=data.Mid(p+17,p2-p-17);
-  PositiveStimulCodesT.SetWindowTextA(tmp);
+  PositiveStimulCodesT.SetWindowText(tmp);
 
-  p=data.Find("<NegativeStimuls>",p2);
-  p2=data.Find("</NegativeStimuls>",p);
+  p = data.Find(_T("<NegativeStimuls>"), p2);
+  p2 = data.Find(_T("</NegativeStimuls>"), p);
   tmp=data.Mid(p+17,p2-p-17);
-  NegativeStimulCodesT.SetWindowTextA(tmp);
+  NegativeStimulCodesT.SetWindowText(tmp);
   
   
   OnCbnSelchangeCombo3();//event search method

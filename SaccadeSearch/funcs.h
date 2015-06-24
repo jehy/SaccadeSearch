@@ -1,4 +1,4 @@
 #include "Conandata.h"
 
-ConanData* ReadConanFile(char* fname,CEdit* log);
+ConanData* ReadConanFile(TCHAR* fname, CEdit* log);
 bool FileExists(CString strFilename);

@@ -6,13 +6,13 @@ using namespace std;
 void AddLog(CEdit*log,CString z)
 {
   CString logstr;
-  log->GetWindowTextA(logstr);
+  log->GetWindowText(logstr);
   logstr.Append(z);
-  logstr.Append("\r\n");
-  log->SetWindowTextA(logstr);
+  logstr.Append(_T("\r\n"));
+  log->SetWindowText(logstr);
 }
 
-ConanData* ReadConanFile(char* fname,CEdit* log)
+ConanData* ReadConanFile(TCHAR* fname, CEdit* log)
 {
  
   //CString z,logstr;
@@ -21,10 +21,10 @@ ConanData* ReadConanFile(char* fname,CEdit* log)
   long lSize;
   byte * buffer;
   size_t result;
-  fopen_s(&pFile, fname, "r+b");
+  _wfopen_s(&pFile, fname, _T("r+b"));
   if (pFile==NULL)
   {
-	  MessageBox(NULL,"Не могу прочитать файл!","Ошибка",MB_OK);
+	  MessageBox(NULL, _T("Не могу прочитать файл!"), _T("Ошибка"), MB_OK);
 	  return NULL;
   }
   //copy file to buffer for quicker operations
@@ -197,13 +197,13 @@ ConanData* ReadConanFile(char* fname,CEdit* log)
 
 
 bool FileExists(CString strFilename) {
-  struct stat stFileInfo;
-  bool blnReturn;
-  int intStat;
+	struct _stat stFileInfo;
+	bool blnReturn;
+	int intStat;
 
   // Attempt to get the file attributes
-  intStat = stat(strFilename,&stFileInfo);
-  if(intStat == 0) {
+	intStat = _wstat(strFilename, &stFileInfo);
+  if (intStat == 0) {
     // We were able to get the file attributes
     // so the file obviously exists.
     blnReturn = true;
@@ -212,8 +212,8 @@ bool FileExists(CString strFilename) {
     // This may mean that we don't have permission to
     // access the folder which contains this file. If you
     // need to do that level of checking, lookup the
-    // return values of stat which will give you
-    // more details on why stat failed.
+    // return values of _wstat which will give you
+    // more details on why _wstat failed.
     blnReturn = false;
   }
   

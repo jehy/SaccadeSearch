@@ -10,7 +10,7 @@ BOOL Eegraph::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
 {
   HCURSOR CursorRuler = ::LoadCursor(NULL,IDC_CROSS);
   HCURSOR CursorMove = ::LoadCursor(NULL,IDC_HAND);
-  //works only with static link to mfc
+  //works only with _wstatic link to mfc
   //HCURSOR CursorZoom = AfxGetApp()->LoadCursor(AFX_IDC_MAGNIFY);
   HCURSOR CursorZoom = ::LoadCursor(NULL,IDC_ARROW);
 
@@ -135,7 +135,7 @@ float Eegraph::GetYFromX(int chan, int rec,float x)
 void Eegraph::OnLButtonDown(UINT nFlags, CPoint point)
 {
   if(MouseAction==1)//zoom
-    this->GetParent()->PostMessageA(WM_LBUTTONDOWN,666,MAKELPARAM(point.x,point.y));
+    this->GetParent()->PostMessage(WM_LBUTTONDOWN,666,MAKELPARAM(point.x,point.y));
   else if(MouseAction==0)//move
   {
     MovePoint=point;  
@@ -180,14 +180,14 @@ void Eegraph::OnLButtonDown(UINT nFlags, CPoint point)
     this->changed=1;
     this->WinPaint();
     
-    this->GetParent()->PostMessageA(WM_RBUTTONDOWN,668,NULL);
+    this->GetParent()->PostMessage(WM_RBUTTONDOWN,668,NULL);
   }
 }
 
 void Eegraph::OnRButtonDown(UINT nFlags, CPoint point)
 {
   if(MouseAction==1)//zoom out
-    this->GetParent()->PostMessageA(WM_RBUTTONDOWN,666,MAKELPARAM(point.x,point.y));
+    this->GetParent()->PostMessage(WM_RBUTTONDOWN,666,MAKELPARAM(point.x,point.y));
 }
 
 void Eegraph::OnLButtonUp(UINT nFlags, CPoint point)
@@ -199,7 +199,7 @@ void Eegraph::OnLButtonUp(UINT nFlags, CPoint point)
       MovePoint.x-=point.x;
       MovePoint.y-=point.y;
       //if(abs(MovePoint.x)>10 || abs(MovePoint.y)>10)
-        this->GetParent()->PostMessageA(WM_RBUTTONDOWN,667,MAKELPARAM(MovePoint.x,MovePoint.y));
+        this->GetParent()->PostMessage(WM_RBUTTONDOWN,667,MAKELPARAM(MovePoint.x,MovePoint.y));
       MovePoint.x=0;
       MovePoint.y=0;
     }
@@ -322,7 +322,7 @@ void Eegraph::DrawStimuls()
         continue;
       x=XToRealCoordsFromPoint(n);
       xz=XToScreenCoords(x);
-      out.Format("%X",stimul);
+	  out.Format(_T("%X"), stimul);
       if(xz>=0 && xz<ScreenGraphWidth())
       {
         if(xz-12>=LastLetterX)
@@ -334,7 +334,7 @@ void Eegraph::DrawStimuls()
           yz+=12;
         }
         LastLetterX=xz;
-        DC.TextOutA(xz,yz,out.GetBuffer(),out.GetLength());
+        DC.TextOut(xz,yz,out.GetBuffer(),out.GetLength());
       }
       
     }
@@ -360,7 +360,7 @@ void Eegraph::DrawCoord()
     coord=XToRealCoords(x);
     out="";
     AppendFormatFloat(&out,coord,3);
-    DC.TextOutA(x+2,ScreenGraphHeight()-12,out.GetBuffer(),out.GetLength());
+    DC.TextOut(x+2,ScreenGraphHeight()-12,out.GetBuffer(),out.GetLength());
     if(grid)
     {
       DC.MoveTo(x,0);
@@ -377,7 +377,7 @@ void Eegraph::DrawCoord()
     coord=YToRealCoords(y);
     out="";
     AppendFormatFloat(&out,coord,5);
-    DC.TextOutA(0+2,y-12,out.GetBuffer(),out.GetLength());
+    DC.TextOut(0+2,y-12,out.GetBuffer(),out.GetLength());
     
     if(grid)
     {
@@ -485,8 +485,8 @@ void Eegraph::DrawDC()
           DC.SelectObject(&PointPen);
           DC.Rectangle(xz-1,yz-1,xz+1,yz+1);
           DC.SelectObject(&Pen);
-          p.Format("%4.0f; %4.3f;",x,y);
-          DC.TextOutA(floor(xz),floor(yz),p.GetBuffer(),p.GetLength());
+		  p.Format(_T("%4.0f; %4.3f;"), x, y);
+          DC.TextOut(floor(xz),floor(yz),p.GetBuffer(),p.GetLength());
           DC.SelectObject(&LinePen);
         }
         if(nextbreak)
@@ -519,9 +519,9 @@ void Eegraph::AppendFormatFloat(CString* string,float f,int maxchars)
     maxchars=i;
   int pre=maxchars-i;
   CString format;
-  format.Format("%d.%d",i,pre);
-  format.Insert(0,"%");
-  format.Append("f");
+  format.Format(_T("%d.%d"), i, pre);
+  format.Insert(0, _T("%"));
+  format.Append(_T("f"));
   CString tmp;
   tmp.Format(format,f);
   string->Append(tmp);
