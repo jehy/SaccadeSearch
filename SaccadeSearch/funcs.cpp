@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Conandata.h"
 #include <sys/stat.h> 
-using namespace std;
+#pragma once
 
 void AddLog(CEdit*log,CString z)
 {
@@ -39,42 +39,47 @@ ConanData* ReadConanFile(TCHAR* fname, CEdit* log)
   //AddLog(log,z);
   
   //can't copy memory directly into structure because it may not be compacted with some compilers's settings.
-  ConanHeader* data=new ConanHeader();
+  
+  char version[4];
+  memcpy_s(version, sizeof(version), &buffer[0], sizeof(version));
+ 
+  ConanHeader* data = new ConanHeader();
 
-  unsigned int pos=0; 
-  memcpy_s(data->cona,sizeof(data->cona),&buffer[0],sizeof(data->cona));
-  pos+=sizeof(data->cona);
-  memcpy_s(data->head,sizeof(data->head),&buffer[pos],sizeof(data->head));
-  pos+=sizeof(data->head);
-  memcpy_s(data->chNames,sizeof(data->chNames),&buffer[pos],sizeof(data->chNames));
-  pos+=sizeof(data->chNames);
-  memcpy_s(&data->TimeData,sizeof(data->TimeData),&buffer[pos],sizeof(data->TimeData));
-  pos+=sizeof(data->TimeData);
-  memcpy_s(&data->Arec,sizeof(data->Arec),&buffer[pos],sizeof(data->Arec));
-  pos+=sizeof(data->Arec);
-  pos+=2;
-  memcpy_s(&data->nChan,sizeof(data->nChan),&buffer[pos],sizeof(data->nChan));
-  pos+=sizeof(data->nChan);
-  memcpy_s(&data->freq,sizeof(data->freq),&buffer[pos],sizeof(data->freq));
-  pos+=sizeof(data->freq);
-  memcpy_s(&data->discrExist,sizeof(data->discrExist),&buffer[pos],sizeof(data->discrExist));
-  pos+=sizeof(data->discrExist);
-  memcpy_s(&data->nRec,sizeof(data->nRec),&buffer[pos],sizeof(data->nRec));
-  pos+=sizeof(data->nRec);
-  memcpy_s(data->nilCalibr,sizeof(data->nilCalibr),&buffer[pos],sizeof(data->nilCalibr));
-  pos+=sizeof(data->nilCalibr);
-  memcpy_s(data->maxCalibr,sizeof(data->maxCalibr),&buffer[pos],sizeof(data->maxCalibr));
-  pos+=sizeof(data->maxCalibr);
+  unsigned int pos = 0;
+  memcpy_s(data->cona, sizeof(data->cona), &buffer[0], sizeof(data->cona));
+  pos += sizeof(data->cona);
+  memcpy_s(data->head, sizeof(data->head), &buffer[pos], sizeof(data->head));
+  pos += sizeof(data->head);
+  memcpy_s(data->chNames->get(), data->chNames->getlength(), &buffer[pos], data->chNames->getlength());
+  pos += data->chNames->getlength();
+  memcpy_s(&data->TimeData, sizeof(data->TimeData), &buffer[pos], sizeof(data->TimeData));
+  pos += sizeof(data->TimeData);
+  memcpy_s(&data->Arec, sizeof(data->Arec), &buffer[pos], sizeof(data->Arec));
+  pos += sizeof(data->Arec);
+  pos += 2;
+  memcpy_s(&data->nChan, sizeof(data->nChan), &buffer[pos], sizeof(data->nChan));
+  pos += sizeof(data->nChan);
+  memcpy_s(&data->freq, sizeof(data->freq), &buffer[pos], sizeof(data->freq));
+  pos += sizeof(data->freq);
+  memcpy_s(&data->discrExist, sizeof(data->discrExist), &buffer[pos], sizeof(data->discrExist));
+  pos += sizeof(data->discrExist);
+  memcpy_s(&data->nRec, sizeof(data->nRec), &buffer[pos], sizeof(data->nRec));
+  pos += sizeof(data->nRec);
+  memcpy_s(data->nilCalibr->get(), data->nilCalibr->getlength(), &buffer[pos], data->nilCalibr->getlength());
+  pos += data->nilCalibr->getlength();
+  memcpy_s(data->maxCalibr->get(), data->maxCalibr->getlength(), &buffer[pos], data->maxCalibr->getlength());
+  pos += data->maxCalibr->getlength();
 
 
-  memcpy_s(data->coord,sizeof(data->coord),&buffer[pos],sizeof(data->coord));
-  pos+=sizeof(data->coord);
+  //memcpy_s(data->coord->get(), data->coord->getlength(), &buffer[pos], data->coord->getlength());
+  pos += data->coord->getlength();
 
-  pos+=11;
-  memcpy_s(data->sens,sizeof(data->sens),&buffer[pos],sizeof(data->sens));
-  pos+=sizeof(data->sens);
+  pos += 11;
+  memcpy_s(data->sens->get(), data->sens->getlength(), &buffer[pos], data->sens->getlength());
+  pos += data->sens->getlength();
 
-  pos=data->Arec;
+  pos = data->Arec;
+  
   
   /*z.Format("Arec: %d \r\n",data->Arec);
   logstr.Append(z);
@@ -124,7 +129,7 @@ ConanData* ReadConanFile(TCHAR* fname, CEdit* log)
       for(int k=0;k<NDataReal[i];k++)
       {
         __int16 xxx=*(__int16*)&buffer[pos];
-        Eeg[i][j][k]=(*(__int16*)&buffer[pos]-(float)data->nilCalibr[j])/(float)data->maxCalibr[j]*(float)data->sens[j];
+        Eeg[i][j][k]=(*(__int16*)&buffer[pos]-(float)data->nilCalibr->get()[j])/(float)data->maxCalibr->get()[j]*(float)data->sens->get()[j];
         pos+=sizeof(__int16);
       }
 	  }
@@ -176,12 +181,13 @@ ConanData* ReadConanFile(TCHAR* fname, CEdit* log)
     //z.Format("recNDataReal2: %d ",NDataReal2[i]);
     //AddLog(log,z);
 
-    
-    //z.Format("Bytes processed: %d \r\n",pos);
-    //AddLog(log,z);
 
   }
   delete[] buffer;
+
+	//CString z;
+    //z.Format(_T("Bytes processed: %d \r\n"),pos);
+    //AddLog(log,z);
 
   ConanData* all=new ConanData();
   all->Header=data;

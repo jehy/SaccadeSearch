@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "Saccade.h"
+#pragma once
 
 Saccade::Saccade(void)
 {

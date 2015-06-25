@@ -7,7 +7,7 @@
 #include "Eegraph.h"
 #include "ConanData.h"
 #include "afxwin.h"
-typedef vector <__int8> StimulVec;
+typedef std::vector <__int8> StimulVec;
 
 // CSaccadeSearchDlg dialog
 class CSaccadeSearchDlg : public CDialog

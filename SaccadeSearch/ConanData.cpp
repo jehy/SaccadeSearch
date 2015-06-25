@@ -1,5 +1,6 @@
 #include "StdAfx.h"
-#include "Conandata.h"
+#include "ConanData.h"
+#pragma once
 
 ConanData::ConanData(void)
 {
@@ -44,7 +45,7 @@ ConanData::~ConanData(void)
     }
   }
   delete[] EegApproximated;
-  delete[] this->Header;
+  delete this->Header;
   delete[] this->Eeg;
   delete[] this->TimeCreating;
   delete[] this->NDataReal2;
@@ -63,4 +64,125 @@ void ConanData::ResetSaccades()
     delete(Saccades.at(i));
   }
   Saccades.clear();
+}
+
+ConanHeader::ConanHeader(void)
+{
+	//chNames(this);
+	memcpy_s(this->version_new,4,"CA40",4);
+	chNames = new ChNames(this);
+	maxCalibr = new MaxCalibr(this);
+	nilCalibr = new NilCalibr(this);
+	sens = new Sens(this);
+	coord = new Coord(this);
+}
+
+ConanHeader::~ConanHeader(void)
+{
+	delete chNames;
+	delete maxCalibr;
+	delete nilCalibr;
+	delete sens;
+	delete coord;
+}
+
+ChNames::ChNames(ConanHeader* parent)
+{
+		this->parent = parent;
+}
+
+char* ChNames:: get()
+{
+	return _chNames;
+}
+
+int ChNames::getlength()
+{
+
+	if (memcmp(parent->cona, parent->version_new, 4) == 0)
+		return 256;
+	else
+		return 128;
+}
+
+
+NilCalibr::NilCalibr(ConanHeader* parent)
+{
+	this->parent = parent;
+}
+
+__int16* NilCalibr::get()
+{
+	return _nilCalibr;
+}
+
+
+int NilCalibr::getlength()
+{
+
+	if (memcmp(parent->cona, parent->version_new,4) == 0)
+		return 64;
+	else
+		return 32;
+}
+
+MaxCalibr::MaxCalibr(ConanHeader* parent)
+{
+	this->parent = parent;
+}
+
+
+__int16* MaxCalibr::get()
+{
+	return _maxCalibr;
+}
+
+int MaxCalibr::getlength()
+{
+
+	if (memcmp(parent->cona, parent->version_new, 4) == 0)
+		return 64;
+	else
+		return 32;
+}
+
+
+Sens::Sens(ConanHeader* parent)
+{
+	this->parent = parent;
+}
+
+__int16* Sens::get()
+{
+	return _sens;
+}
+
+int Sens::getlength()
+{
+
+	if (memcmp(parent->cona, parent->version_new, 4) == 0)
+		return 64;
+	else
+		return 32;
+}
+
+
+Coord::Coord(ConanHeader* parent)
+{
+	this->parent = parent;
+}
+
+
+unsigned __int8* Coord::get()
+{
+	return _coord[0];
+}
+
+int Coord::getlength()
+{
+
+	if (memcmp(parent->cona, parent->version_new, 4) == 0)
+		return 64;
+	else
+		return 32;
 }

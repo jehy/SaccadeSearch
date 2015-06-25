@@ -5,16 +5,16 @@
 #include "SaccadeSearch.h"
 #include "SaccadeSearchDlg.h"
 #include "funcs.h"
-#include "Conandata.h"
+#include "ConanData.h"
 #include "Eegraph.h"
-#include "Saccade.h"
+//#include "Saccade.h"
 #include "windows.h"
-#include <vector>
+//#include <vector>
 
 
-using namespace std;
-typedef vector <Saccade*> SaccadeVec;
-typedef vector <__int8> StimulVec;
+//using namespace std;
+typedef std::vector <Saccade*> SaccadeVec;
+typedef std::vector <__int8> StimulVec;
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -1267,14 +1267,23 @@ void CSaccadeSearchDlg::OnBnClickedButton7()
   OpenedFile.SetWindowText(path);
   if(Conan!=NULL)
     delete(Conan);
-  Conan=ReadConanFile(path.GetBuffer(),&log);
+  try
+  {
+	  Conan = ReadConanFile(path.GetBuffer(), &log);
+  }
+  catch (std::exception& e)
+  {
+	  CString err = _T("Failed to read file!");
+	  MessageBox(err, _T("Error"), MB_OK);
+	  return;
+  }
   if(Conan==NULL)
     return;
 
   chan.ResetContent();
   rec.ResetContent();
   CString chnum,chname,channels;
-  const wchar_t* tmp33 = GetWC(Conan->Header->chNames);
+  const wchar_t* tmp33 = GetWC(Conan->Header->chNames->get());
   channels.Append(tmp33);
   delete(tmp33);
   for(int i=0;i<Conan->Header->nChan;i++)

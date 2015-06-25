@@ -1,10 +1,10 @@
 #pragma once
 #include <vector>
 #include "Saccade.h"
-using namespace std;
-typedef vector <Saccade*> SaccadeVec;
-
-struct ConanHeader
+//using namespace std;
+typedef std::vector <Saccade*> SaccadeVec;
+/*
+struct ConanHeader_old
 {
 	char cona[4];
 	char head[162];
@@ -16,15 +16,115 @@ struct ConanHeader
 	unsigned __int8 discrExist;
 	unsigned __int16 nRec;//      Number of records
 	unsigned __int16 nilCalibr[32];
-	unsigned __int16 maxCalibr[32]; 
-    unsigned __int8 coord[32][4];
-	unsigned __int16 sens[32]; 
+	unsigned __int16 maxCalibr[32];
+	unsigned __int8 coord[32][4];
+	unsigned __int16 sens[32];
 };
 
+struct ConanHeader_new
+{
+	char cona[4];
+	char head[162];
+	char chNames[256];
+	__int32 TimeData;//           We dunno, wtf is this.
+	unsigned __int16 Arec;
+	unsigned __int8 nChan;//      Number of channels
+	unsigned __int16 freq;
+	unsigned __int8 discrExist;
+	unsigned __int16 nRec;//      Number of records
+	unsigned __int16 nilCalibr[64];
+	unsigned __int16 maxCalibr[64];
+	unsigned __int8 coord[64][4];
+	unsigned __int16 sens[64];
+};
+*/
 struct StimulSignal
 {
   unsigned __int8 Littler;
   unsigned __int8 Elder;
+};
+
+class ChNames;
+class MaxCalibr;
+class NilCalibr;
+class Sens;
+class Coord;
+
+class ConanHeader
+{
+public:
+	ConanHeader(void);
+	~ConanHeader(void);
+	char cona[4];
+	char version_new[4];
+	char head[162];
+	__int32 TimeData;//           We dunno, wtf is this.
+	unsigned __int16 Arec;
+	unsigned __int8 nChan;//      Number of channels
+	unsigned __int16 freq;
+	unsigned __int8 discrExist;
+	unsigned __int16 nRec;//      Number of records
+	ChNames* chNames;
+	MaxCalibr* maxCalibr;
+	NilCalibr* nilCalibr;
+	Sens* sens;
+	Coord* coord;
+};
+
+
+class ChNames
+{
+public:
+	ChNames(ConanHeader* parent);
+	char* get();
+	int getlength();
+private:
+	char _chNames[256];
+	ConanHeader* parent;
+};
+
+class NilCalibr
+{
+private:
+	__int16 _nilCalibr[64];
+	ConanHeader* parent;
+public:
+	NilCalibr(ConanHeader* parent);
+	__int16* get();
+	int getlength();
+};
+
+class MaxCalibr
+{
+private:
+	__int16 _maxCalibr[64];
+	ConanHeader* parent;
+public:
+	MaxCalibr(ConanHeader* parent);
+	__int16* get();
+	int getlength();
+};
+
+class Sens
+{
+private:
+	__int16 _sens[64];
+	ConanHeader* parent;
+public:
+	Sens(ConanHeader* parent);
+	__int16* get();
+	int getlength();
+};
+
+class Coord
+{
+private:
+	unsigned __int8 _coord[64][4];
+	ConanHeader* parent;
+public:
+	Coord(ConanHeader* parent);
+	unsigned __int8* get();
+	int getlength();
 };
 
 class ConanData
