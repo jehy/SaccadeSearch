@@ -279,8 +279,8 @@ void CSaccadeSearchDlg::RecreateEeGraph()
 	GetClientRect(&DRect);			//Получить координаты клиентской части диалога
 	//log.GetWindowRect(&ORect);	//Получить координаты кнопки
 	ScreenToClient(&ORect);			//Преобразовать координаты кнопки из экранных в клиентские
-	WRect.top=DRect.top+305;			//Задать координаты окна
-	WRect.left=DRect.left+120;
+	WRect.top=DRect.top+370;			//Задать координаты окна
+	WRect.left=DRect.left+140;
   WRect.right =DRect.right-5;
 	WRect.bottom=DRect.bottom-5;
 
