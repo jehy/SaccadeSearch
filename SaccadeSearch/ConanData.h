@@ -56,7 +56,7 @@ public:
 	ConanHeader(void);
 	~ConanHeader(void);
 	char cona[4];
-	char version_new[4];
+	char* version_new = "CA40";
 	char head[162];
 	__int32 TimeData;//           We dunno, wtf is this.
 	unsigned __int16 Arec;
@@ -69,6 +69,7 @@ public:
 	NilCalibr* nilCalibr;
 	Sens* sens;
 	Coord* coord;
+	bool isNewVersion();
 };
 
 

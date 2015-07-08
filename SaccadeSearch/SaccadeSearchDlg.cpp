@@ -1141,14 +1141,15 @@ void CSaccadeSearchDlg::OnBnClickedButton8()
 //  Win->WinPaint();
 //}
 
-const wchar_t *GetWC(const char *c)
+/*const wchar_t *GetWC(const char *c)
 {
 	const size_t cSize = strlen(c) + 1;
+	size_t converted=0;
 	wchar_t* wc = new wchar_t[cSize];
-	mbstowcs(wc, c, cSize);
-
+	//mbstowcs(wc, c, cSize);
+	mbstowcs_s(&converted,wc, c, cSize)
 	return wc;
-}
+}*/
 
 void CSaccadeSearchDlg::FocusToSaccade()
 {
@@ -1282,10 +1283,9 @@ void CSaccadeSearchDlg::OnBnClickedButton7()
 
   chan.ResetContent();
   rec.ResetContent();
-  CString chnum,chname,channels;
-  const wchar_t* tmp33 = GetWC(Conan->Header->chNames->get());
-  channels.Append(tmp33);
-  delete(tmp33);
+  CString chnum, chname, channels;
+  USES_CONVERSION;
+  channels.Append(A2W(Conan->Header->chNames->get()));
   for(int i=0;i<Conan->Header->nChan;i++)
   {
     chname=channels.Mid(i*4,4);

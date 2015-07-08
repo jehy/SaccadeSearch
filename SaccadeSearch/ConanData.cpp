@@ -69,7 +69,7 @@ void ConanData::ResetSaccades()
 ConanHeader::ConanHeader(void)
 {
 	//chNames(this);
-	memcpy_s(this->version_new,4,"CA40",4);
+	//memcpy_s(this->version_new,4,"CA40",4);
 	chNames = new ChNames(this);
 	maxCalibr = new MaxCalibr(this);
 	nilCalibr = new NilCalibr(this);
@@ -86,6 +86,14 @@ ConanHeader::~ConanHeader(void)
 	delete coord;
 }
 
+
+bool ConanHeader::isNewVersion()
+{
+	if (memcmp(this->cona, this->version_new, 4) == 0)
+		return 1;
+	return 0;
+}
+
 ChNames::ChNames(ConanHeader* parent)
 {
 		this->parent = parent;
@@ -99,7 +107,7 @@ char* ChNames:: get()
 int ChNames::getlength()
 {
 
-	if (memcmp(parent->cona, parent->version_new, 4) == 0)
+	if (parent->isNewVersion())
 		return 256;
 	else
 		return 128;
@@ -120,7 +128,7 @@ __int16* NilCalibr::get()
 int NilCalibr::getlength()
 {
 
-	if (memcmp(parent->cona, parent->version_new,4) == 0)
+	if (parent->isNewVersion())
 		return 64;
 	else
 		return 32;
@@ -140,7 +148,7 @@ __int16* MaxCalibr::get()
 int MaxCalibr::getlength()
 {
 
-	if (memcmp(parent->cona, parent->version_new, 4) == 0)
+	if (parent->isNewVersion())
 		return 64;
 	else
 		return 32;
@@ -160,7 +168,7 @@ __int16* Sens::get()
 int Sens::getlength()
 {
 
-	if (memcmp(parent->cona, parent->version_new, 4) == 0)
+	if (parent->isNewVersion())
 		return 64;
 	else
 		return 32;
@@ -181,7 +189,7 @@ unsigned __int8* Coord::get()
 int Coord::getlength()
 {
 
-	if (memcmp(parent->cona, parent->version_new, 4) == 0)
+	if (parent->isNewVersion())
 		return 64;
 	else
 		return 32;
