@@ -156,8 +156,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 5,4,0,5
- PRODUCTVERSION 5,4,0,5
+ FILEVERSION 5,4,0,6
+ PRODUCTVERSION 5,4,0,6
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -174,12 +174,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Jehy"
             VALUE "FileDescription", "http://jehy.ru"
-            VALUE "FileVersion", "5.4.0.5"
+            VALUE "FileVersion", "5.4.0.6"
             VALUE "InternalName", "SaccadeSearch.exe"
             VALUE "LegalCopyright", " (c) Jehy.  All rights reserved."
             VALUE "OriginalFilename", "SaccadeSearch.exe"
             VALUE "ProductName", "SaccadeSearch"
-            VALUE "ProductVersion", "5.4.0.5"
+            VALUE "ProductVersion", "5.4.0.6"
         END
     END
     BLOCK "VarFileInfo"
