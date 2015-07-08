@@ -68,8 +68,6 @@ void ConanData::ResetSaccades()
 
 ConanHeader::ConanHeader(void)
 {
-	//chNames(this);
-	//memcpy_s(this->version_new,4,"CA40",4);
 	chNames = new ChNames(this);
 	maxCalibr = new MaxCalibr(this);
 	nilCalibr = new NilCalibr(this);
@@ -108,9 +106,9 @@ int ChNames::getlength()
 {
 
 	if (parent->isNewVersion())
-		return 256;
+		return sizeof(_chNames);
 	else
-		return 128;
+		return sizeof(_chNames)/2;
 }
 
 
@@ -129,9 +127,9 @@ int NilCalibr::getlength()
 {
 
 	if (parent->isNewVersion())
-		return 64;
+		return sizeof(_nilCalibr);
 	else
-		return 32;
+		return sizeof(_nilCalibr)/2;
 }
 
 MaxCalibr::MaxCalibr(ConanHeader* parent)
@@ -149,9 +147,9 @@ int MaxCalibr::getlength()
 {
 
 	if (parent->isNewVersion())
-		return 64;
+		return sizeof(_maxCalibr);
 	else
-		return 32;
+		return sizeof(_maxCalibr)/2;
 }
 
 
@@ -169,9 +167,9 @@ int Sens::getlength()
 {
 
 	if (parent->isNewVersion())
-		return 64;
+		return sizeof(_sens);
 	else
-		return 32;
+		return sizeof(_sens)/2;
 }
 
 
@@ -183,14 +181,14 @@ Coord::Coord(ConanHeader* parent)
 
 unsigned __int8* Coord::get()
 {
-	return _coord[0];
+		return _coord[0];
 }
 
 int Coord::getlength()
 {
 
 	if (parent->isNewVersion())
-		return 64;
+		return sizeof(_coord);
 	else
-		return 32;
+		return sizeof(_coord)/2;
 }

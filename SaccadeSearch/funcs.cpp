@@ -42,9 +42,18 @@ ConanData* ReadConanFile(TCHAR* fname, CEdit* log)
   
   char version[4];
   memcpy_s(version, sizeof(version), &buffer[0], sizeof(version));
- 
-  ConanHeader* data = new ConanHeader();
 
+
+  if (memcmp(version, "CA30", 4) != 0 && memcmp(version, "CA40", 4) != 0)
+  {
+	  CString error = _T("Неизвестная версия формата. Ожидалось CA30 или CA40, получено ");
+	  USES_CONVERSION;
+	  error.Append(A2W(version));
+	  MessageBox(NULL, (error), _T("Ошибка"), MB_OK);
+	  return NULL;
+  }
+
+  ConanHeader* data = new ConanHeader();
   unsigned int pos = 0;
   memcpy_s(data->cona, sizeof(data->cona), &buffer[0], sizeof(data->cona));
   pos += sizeof(data->cona);
@@ -71,7 +80,7 @@ ConanData* ReadConanFile(TCHAR* fname, CEdit* log)
   pos += data->maxCalibr->getlength();
 
 
-  //memcpy_s(data->coord->get(), data->coord->getlength(), &buffer[pos], data->coord->getlength());
+  memcpy_s(data->coord->get(), data->coord->getlength(), &buffer[pos], data->coord->getlength());
   pos += data->coord->getlength();
 
   pos += 11;
