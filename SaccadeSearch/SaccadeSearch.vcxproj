@@ -139,6 +139,7 @@
     <ClInclude Include="SaccadeSearch.h" />
     <ClInclude Include="SaccadeSearchDlg.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="uexception.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\SaccadeSearch.ico" />

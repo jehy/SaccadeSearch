@@ -4,66 +4,66 @@
 
 ConanData::ConanData(void)
 {
-  this->Header=NULL;
-  this->Eeg=NULL;
-  this->TimeCreating=NULL;
-  this->NDataReal2=NULL;
-  this->NDataReal=NULL;
-  this->NDataRaw=NULL;
-  this->Discr=NULL;
-  EegApproximated=NULL;
-  this->CurChannel=0;
-  this->CurRec=0;
-  this->ZoomX=100;
-  this->ZoomY=(float)0.1;
-  this->XOffset=0;
-  this->YOffset=0;
-  Approximate=0;
-  AproxCoef=0;
-  Iterations=0;
-  MinExtremumPoints=0;
+	this->Header = NULL;
+	this->Eeg = NULL;
+	this->TimeCreating = NULL;
+	this->NDataReal2 = NULL;
+	this->NDataReal = NULL;
+	this->NDataRaw = NULL;
+	this->Discr = NULL;
+	EegApproximated = NULL;
+	this->CurChannel = 0;
+	this->CurRec = 0;
+	this->ZoomX = 100;
+	this->ZoomY = (float)0.1;
+	this->XOffset = 0;
+	this->YOffset = 0;
+	Approximate = 0;
+	AproxCoef = 0;
+	Iterations = 0;
+	MinExtremumPoints = 0;
 }
 
 ConanData::~ConanData(void)
 {
-  if(this->Header==NULL)
-    return;//do not try do destroy non-initialized object...
-  for (int i=0;i<this->Header->nRec;i++)
-  {
-	  for (int j=0;j<this->Header->nChan;j++)
-      delete[] Eeg[i][j];
-    delete[] Eeg[i];
-    delete[] Discr[i];
-  }
-  if(EegApproximated!=NULL)
-  {
-    for (int i=0;i<this->Header->nRec;i++)
-    {
-	    for (int j=0;j<this->Header->nChan;j++)
-        delete[] EegApproximated[i][j];
-      delete[] EegApproximated[i];
-    }
-  }
-  delete[] EegApproximated;
-  delete this->Header;
-  delete[] this->Eeg;
-  delete[] this->TimeCreating;
-  delete[] this->NDataReal2;
-  delete[] this->NDataReal;
-  delete[] this->NDataRaw;
-  delete[] this->Discr;
-  ResetSaccades();
+	if (this->Header == NULL)
+		return;//do not try do destroy non-initialized object...
+	for (int i = 0; i < this->Header->nRec; i++)
+	{
+		for (int j = 0; j < this->Header->nChan; j++)
+			delete[] Eeg[i][j];
+		delete[] Eeg[i];
+		delete[] Discr[i];
+	}
+	if (EegApproximated != NULL)
+	{
+		for (int i = 0; i < this->Header->nRec; i++)
+		{
+			for (int j = 0; j < this->Header->nChan; j++)
+				delete[] EegApproximated[i][j];
+			delete[] EegApproximated[i];
+		}
+	}
+	delete[] EegApproximated;
+	delete this->Header;
+	delete[] this->Eeg;
+	delete[] this->TimeCreating;
+	delete[] this->NDataReal2;
+	delete[] this->NDataReal;
+	delete[] this->NDataRaw;
+	delete[] this->Discr;
+	ResetSaccades();
 }
 
 void ConanData::ResetSaccades()
 {
 
-  int s=Saccades.size();
-  for(int i=0;i<s;i++)//remove found saccades
-  {
-    delete(Saccades.at(i));
-  }
-  Saccades.clear();
+	int s = Saccades.size();
+	for (int i = 0; i < s; i++)//remove found saccades
+	{
+		delete(Saccades.at(i));
+	}
+	Saccades.clear();
 }
 
 ConanHeader::ConanHeader(void)
@@ -94,10 +94,10 @@ bool ConanHeader::isNewVersion()
 
 ChNames::ChNames(ConanHeader* parent)
 {
-		this->parent = parent;
+	this->parent = parent;
 }
 
-char* ChNames:: get()
+char* ChNames::get()
 {
 	return _chNames;
 }
@@ -108,7 +108,7 @@ int ChNames::getlength()
 	if (parent->isNewVersion())
 		return sizeof(_chNames);
 	else
-		return sizeof(_chNames)/2;
+		return sizeof(_chNames) / 2;
 }
 
 
@@ -129,7 +129,7 @@ int NilCalibr::getlength()
 	if (parent->isNewVersion())
 		return sizeof(_nilCalibr);
 	else
-		return sizeof(_nilCalibr)/2;
+		return sizeof(_nilCalibr) / 2;
 }
 
 MaxCalibr::MaxCalibr(ConanHeader* parent)
@@ -149,7 +149,7 @@ int MaxCalibr::getlength()
 	if (parent->isNewVersion())
 		return sizeof(_maxCalibr);
 	else
-		return sizeof(_maxCalibr)/2;
+		return sizeof(_maxCalibr) / 2;
 }
 
 
@@ -169,7 +169,7 @@ int Sens::getlength()
 	if (parent->isNewVersion())
 		return sizeof(_sens);
 	else
-		return sizeof(_sens)/2;
+		return sizeof(_sens) / 2;
 }
 
 
@@ -181,7 +181,7 @@ Coord::Coord(ConanHeader* parent)
 
 unsigned __int8* Coord::get()
 {
-		return _coord[0];
+	return _coord[0];
 }
 
 int Coord::getlength()
@@ -190,5 +190,5 @@ int Coord::getlength()
 	if (parent->isNewVersion())
 		return sizeof(_coord);
 	else
-		return sizeof(_coord)/2;
+		return sizeof(_coord) / 2;
 }

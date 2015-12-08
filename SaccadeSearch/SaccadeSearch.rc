@@ -49,8 +49,8 @@ BEGIN
     LTEXT           "Y scale",IDC_STATIC,7,168,23,8
     EDITTEXT        IDC_EDIT2,7,149,40,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDIT3,7,178,40,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT4,25,337,24,14,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
-    LTEXT           "freq=",IDC_STATIC,5,337,20,8
+    EDITTEXT        IDC_EDIT4,27,337,24,14,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+    LTEXT           "freq=",IDC_STATIC,7,337,20,8
     EDITTEXT        IDC_EDIT5,7,208,40,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDIT6,7,235,40,14,ES_AUTOHSCROLL
     LTEXT           "X offset",IDC_STATIC,7,195,26,8
@@ -64,7 +64,7 @@ BEGIN
     PUSHBUTTON      "right",IDC_BUTTON4,43,274,21,15
     PUSHBUTTON      "down",IDC_BUTTON5,24,289,19,17
     LTEXT           "look",IDC_STATIC,28,279,14,8
-    CONTROL         "Grid",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,308,29,10
+    CONTROL         "Grid",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,308,29,10
     CONTROL         "Show point values",IDC_CHECK3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,323,74,10
     LTEXT           "X begin",IDC_STATIC,71,83,24,8
     LTEXT           "Y begin",IDC_STATIC,71,100,24,8
@@ -73,9 +73,9 @@ BEGIN
     LTEXT           "Amplitude",IDC_STATIC,151,81,32,8
     COMBOBOX        IDC_COMBO3,416,90,62,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Search method",IDC_STATIC,366,91,49,8
-    PUSHBUTTON      "Save Saccades",IDC_BUTTON1,3,29,58,14
+    PUSHBUTTON      "Save Saccades",IDC_BUTTON1,6,29,58,14
     PUSHBUTTON      "Load",IDC_BUTTON6,271,220,78,14,NOT WS_VISIBLE
-    PUSHBUTTON      "Load Conan",IDC_BUTTON7,3,12,59,14
+    PUSHBUTTON      "Load Conan",IDC_BUTTON7,6,12,59,14
     GROUPBOX        "Search results",IDC_STATIC,68,25,283,110
     CONTROL         "Zoom in and out",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON,119,147,67,10
     CONTROL         "Move",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,76,148,33,10
@@ -140,13 +140,14 @@ BEGIN
     CONTROL         "Search for calibration stimul",IDC_CHECK8,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,370,137,104,10
     PUSHBUTTON      "Set as beginning",IDC_BUTTON10,225,167,57,14
     PUSHBUTTON      "Set as end",IDC_BUTTON15,288,167,51,14
-    PUSHBUTTON      "Load Options",IDC_BUTTON16,3,47,57,14
-    PUSHBUTTON      "Save Options",IDC_BUTTON17,3,64,57,14
+    PUSHBUTTON      "Load Options",IDC_BUTTON16,6,47,57,14
+    PUSHBUTTON      "Save Options",IDC_BUTTON17,6,64,57,14
     LTEXT           "Working with file",IDC_STATIC,70,10,54,8
     EDITTEXT        IDC_EDIT31,129,9,221,14,ES_AUTOHSCROLL | ES_READONLY
     PUSHBUTTON      "Make virtual",IDC_BUTTON18,293,98,50,14
     LTEXT           "Notice",IDC_STATIC,79,120,21,8
     EDITTEXT        IDC_EDIT32,105,118,237,14,ES_AUTOHSCROLL
+    CONTROL         "Ignore stimul code 02",IDC_CHECK9,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,350,85,10
 END
 
 
@@ -156,8 +157,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 5,4,0,6
- PRODUCTVERSION 5,4,0,6
+ FILEVERSION 5,4,0,7
+ PRODUCTVERSION 5,4,0,7
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -174,12 +175,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Jehy"
             VALUE "FileDescription", "http://jehy.ru"
-            VALUE "FileVersion", "5.4.0.6"
+            VALUE "FileVersion", "5.4.0.7"
             VALUE "InternalName", "SaccadeSearch.exe"
             VALUE "LegalCopyright", " (c) Jehy.  All rights reserved."
             VALUE "OriginalFilename", "SaccadeSearch.exe"
             VALUE "ProductName", "SaccadeSearch"
-            VALUE "ProductVersion", "5.4.0.6"
+            VALUE "ProductVersion", "5.4.0.7"
         END
     END
     BLOCK "VarFileInfo"
@@ -200,6 +201,7 @@ BEGIN
     IDD_SACCADESEARCH_DIALOG, DIALOG
     BEGIN
         RIGHTMARGIN, 613
+        VERTGUIDE, 6
         VERTGUIDE, 357
         VERTGUIDE, 403
         VERTGUIDE, 465
