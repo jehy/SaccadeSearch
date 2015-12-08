@@ -738,22 +738,23 @@ int CSaccadeSearchDlg::SetStimul(int rec, int n)
 {
 	//check for stimul value
 	Stimul = Conan->Discr[rec][n].Elder;
-	if (Stimul != 2 && Stimul != LastStimulCode)
+	if (Stimul == 2 && Win->IgnoreStumulCode02 || Stimul == LastStimulCode)
+		return 0;
+	//if (Stimul != LastStimulCode)
+
+	float x = Win->XToRealCoordsFromPoint(n);
+	if (Stimul == 128)//calibrating,80 in hex
 	{
-		float x = Win->XToRealCoordsFromPoint(n);
-		if (Stimul == 128)//calibrating,80 in hex
-		{
-			LastCalStimulTime = x;
-			return 0;
-		}
-		else
-		{
-			LastStimulTime = x;
-			LastStimulCode = Stimul;
-			return Stimul;
-		}
+		LastCalStimulTime = x;
+		return 0;
 	}
-	else return 0;
+	else
+	{
+		LastStimulTime = x;
+		LastStimulCode = Stimul;
+		return Stimul;
+	}
+
 }
 
 int CSaccadeSearchDlg::GetStimulSign(__int8 stimul)
@@ -2193,7 +2194,7 @@ void CSaccadeSearchDlg::OnBnClickedButton18()
 
 void CSaccadeSearchDlg::OnBnClickedCheck9()
 {
-	if (IgnoreStumulCode02.GetCheck()==BST_UNCHECKED)
+	if (IgnoreStumulCode02.GetCheck() == BST_UNCHECKED)
 		Win->IgnoreStumulCode02 = false;
 	else
 		Win->IgnoreStumulCode02 = true;
